@@ -217,7 +217,7 @@ rem OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
     echo Examples:
     echo   %NAME%         run a %DD% minute time box
     echo   %NAME% 15      run a 15 minute time box
-    echo   %NAME% 12      run a 10 minute time box
+    echo   %NAME% 10      run a 10 minute time box
     echo.
     echo Report bugs to ^<susam@susam.in^>.
     if %MODE% == Explorer (

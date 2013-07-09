@@ -84,7 +84,7 @@ Usage
     Examples:
       timebox         run a 30 minute time box
       timebox 15      run a 15 minute time box
-      timebox 12      run a 10 minute time box
+      timebox 10      run a 10 minute time box
 
     Report bugs to <susam@susam.in>.
 
