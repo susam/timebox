@@ -168,11 +168,10 @@ rem OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
             set str=!str:~%%i!
         )
     )
-    (
-        endlocal
+    endlocal & (
         set %~2=%len%
-        goto :eof
     )
+    goto :eof
 
 :echo_newlines
     for /l %%i in (1, 1, %~1) do (
