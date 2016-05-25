@@ -148,16 +148,16 @@ minute()
     # 5 minutes from the end and at the end of the time box.
     if [ $time_left = $duration ]
     then
-        beep 2 &
+        beep 2
     elif [ $time_left = 15 ] && [ $duration != 15 ]
     then
-        beep 1 &
+        beep 1
     elif [ $time_left = 5 ] && [ $duration != 5 ]
     then
-        beep 2 &
+        beep 2
     elif [ $time_left = 0 ]
     then
-        beep 4 &
+        beep 4
     fi
 
     # Determine smileys to use at the end of time box.
@@ -214,10 +214,6 @@ print_time()
 }
 
 
-# Interval (in seconds) between two consecutive beeps.
-BEEP_INTERVAL=1
-
-
 # Play one or more beeps.
 #
 # Arguments:
@@ -230,7 +226,6 @@ beep()
     while [ $j -lt $count ]
     do
         printf "\a"
-        sleep "$BEEP_INTERVAL"
         j=$(( $j + 1 ))
     done
 
