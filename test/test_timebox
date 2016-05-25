@@ -80,9 +80,11 @@ test_qtpi()
 test_default_duration()
 {
     unset MSG_COMMANDS
-    BEEP_INTERVAL=0
-    main -m 0 | sed 's/..:..:../TIME/; s/\a//g' > "$TWORK/timebox.out"
+
+    main -m 0 |
+    sed 's/..:..:../TIME/; s/[^[:print:]]//g' > "$TWORK/timebox.out"
     diff -u "$TWORK/timebox.out" "$TDATA/timebox30.out"
+    cp "$TWORK/timebox.out" out.out
 }
 
 
@@ -90,8 +92,8 @@ test_default_duration()
 test_good_duration()
 {
     unset MSG_COMMANDS
-    BEEP_INTERVAL=0
-    main -m 0 15 | sed 's/..:..:../TIME/; s/\a//g' > "$TWORK/timebox.out"
+    main -m 0 15 |
+    sed 's/..:..:../TIME/; s/[^[:print:]]//g' > "$TWORK/timebox.out"
     diff -u "$TWORK/timebox.out" "$TDATA/timebox15.out"
 }
 
@@ -122,8 +124,8 @@ test_zero_duration()
 test_desktop_msg()
 {
     MSG_COMMANDS='echo msg: "$msg"'
-    BEEP_INTERVAL=0
-    main -m 0 | sed 's/\a//g' | grep -q "^msg: :-) :-) :-) :-) :-)$"
+    main -m 0 | sed 's/[^[:print:]]//g' |
+    grep -q "^msg: :-) :-) :-) :-) :-)$"
 }
 
 
@@ -140,8 +142,8 @@ echo msg4: "\$msg"
 eof
 )"
 
-    BEEP_INTERVAL=0
-    main -m 0 | sed 's/..:..:../TIME/; s/\a//g' > "$TWORK/timebox.out"
+    main -m 0 |
+    sed 's/..:..:../TIME/; s/[^[:print:]]//g' > "$TWORK/timebox.out"
     diff -u "$TWORK/timebox.out" "$TDATA/timebox-msg.out"
 }
 
@@ -151,10 +153,10 @@ eof
 test_desktop_special_msg()
 {
     MSG_COMMANDS='echo msg: "$msg"'
-    BEEP_INTERVAL=0
     SPECIAL_FILE=$TWORK/.sunaina
     touch "$SPECIAL_FILE"
-    main -m 0 | sed 's/..:..:../TIME/; s/\a//g' > "$TWORK/timebox.out"
+    main -m 0 |
+    sed 's/..:..:../TIME/; s/[^[:print:]]//g' > "$TWORK/timebox.out"
     diff -u "$TWORK/timebox.out" "$TDATA/timebox-special-msg.out"
 }
 
@@ -163,7 +165,6 @@ test_desktop_special_msg()
 test_end_log()
 {
     unset MSG_COMMANDS
-    BEEP_INTERVAL=0
     LOG_FILE=$TWORK/timebox.log
     main -m 0 > /dev/null
     grep -q "^....-..-.. ..:..:.. - 30$" "$LOG_FILE"
