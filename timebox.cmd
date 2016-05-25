@@ -1,153 +1,235 @@
-@echo off
+@echo off & goto :main
 
-goto :start
-rem Timeboxing script
+rem Timebox
 
-rem Copyright (c) 2013 Susam Pal
-rem All rights reserved.
+rem The MIT License (MIT)
 rem
-rem Redistribution and use in source and binary forms, with or without
-rem modification, are permitted provided that the following conditions
-rem are met:
-rem     1. Redistributions of source code must retain the above copyright
-rem        notice, this list of conditions and the following disclaimer.
-rem     2. Redistributions in binary form must reproduce the above
-rem        copyright notice, this list of conditions and the following
-rem        disclaimer in the documentation and/or other materials provided
-rem        with the distribution.
+rem Copyright (c) 2013-2016 Susam Pal
 rem
-rem THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
-rem "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
-rem LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
-rem A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
-rem HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
-rem SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
-rem LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
-rem DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
-rem THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
-rem (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
-rem OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+rem Permission is hereby granted, free of charge, to any person obtaining
+rem a copy of this software and associated documentation files (the
+rem "Software"), to deal in the Software without restriction, including
+rem without limitation the rights to use, copy, modify, merge, publish,
+rem distribute, sublicense, and/or sell copies of the Software, and to
+rem permit persons to whom the Software is furnished to do so, subject to
+rem the following conditions:
+rem
+rem The above copyright notice and this permission notice shall be
+rem included in all copies or substantial portions of the Software.
+rem
+rem THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+rem EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+rem MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+rem IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY
+rem CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
+rem TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
+rem SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-:start
+
+rem Starting point of this script.
+:main
     setlocal
 
-    rem Script data
-    set VERSION=0.1
-    set COPYRIGHT=Copyright (c) 2013 Susam Pal
-    set LICENSE_URL=http://susam.in/licenses/bsd/
+    rem Script data.
+    set VERSION=0.2.0-DEV
+    set AUTHOR=Susam Pal
+    set COPYRIGHT=Copyright (c) 2013-2016 %AUTHOR%
+    set LICENSE_URL=http://susam.in/licenses/mit/
+    set SUPPORT_URL=https://github.com/susam/timebox/issues
+    set NAME=%~n0
 
-    rem Script settings
-    set LOG=Yes
-    set TIME_LOG=%~dp0\timeboxes.txt
+    rem Timer data.
     set DEFAULT_DURATION=30
+    set LOG_FILE=%userprofile%\timebox.log
+    set SPECIAL_FILE=%userprofile%\.sunaina
 
-    rem Determine how the script is executed and set global variables
-    rem accordingly
-    if /i "%COMSPEC%" == "%CMDCMDLINE%" (
-        set MODE=Console
-        set NAME=%0
-    ) else (
-        set MODE=Explorer
-        set NAME=%~nx0
-    )
-
-    rem Handle command line arguments
-    if %~1. == . (
-        call :timer %DEFAULT_DURATION%
-    ) else if %~1. == -w. (
-        call :where_am_i
-    ) else if %~1. == --where. (
-        call :where_am_i
-    ) else if %~1. == -h. (
-        call :help
-    ) else if %~1. == --help. (
-        call :help
-    ) else if %~1. == /?. (
-        call :help
-    ) else if %~1. == -v. (
-        call :version
-    ) else if %~1. == --version. (
-        call :version
-    ) else if %~1. == --qtpi. (
-        call :qtpi
-    ) else (
-        call :timer %~1
-    )
+    rem Parse arguments and start timer.
+    set minute=60
+    call :parse_arguments %*
 
     endlocal
     goto :eof
 
-:timer
-    setlocal enabledelayedexpansion
-    set /a duration = %~1
 
-    rem Validate duration
-    if %duration% EQU 0 (
-        call :bad_duration_error
-        goto :eof
-    ) else if %duration% LSS 5 (
-        call :less_duration_error
-        goto :eof
-    ) else if %duration% GTR 90 (
-        call :more_duration_error
-        goto :eof
-    )
-
-    rem Round down duration to a multiple of five
-    set /a duration = (%duration% / 5) * 5
-
-    rem Beep and start timer
-    call :beep 2
-    for /l %%i in (%duration%, -5, 5) do (
-        rem Display time left
-        set time_left=0%%i
-        echo !time:~0,-3! - !time_left:~-2!
-
-        call :pre_sleep %duration% %%i
-        call :sleep 300
-    )
-
-    rem End timer
-    echo %time:~0,-3% - 00
-    if %LOG%. == Yes. (
-        set duration=0%duration%
-        echo %date% %time:~0,-3% - !duration:~-2!>>%TIME_LOG%
-    )
-
-    rem Beep and display smileys
-    call :beep 4
-    echo     
-    msg %username% /w /time:10 ":-)    :-)    :-)    :-)    :-)"
-
-    endlocal
-    goto :eof
-
-:pre_sleep
+rem Parse command line arguments passed to this script.
+rem
+rem Arguments:
+rem   arg...: All arguments this script was invoked with.
+:parse_arguments
     setlocal
+    set arg=%~1
+    rem Handle command line arguments
+    if "%arg%" == "-w" (
+        call :where_am_i
+        goto :eof
+    ) else if "%arg%" == "--where" (
+        call :where_am_i
+        goto :eof
+    ) else if "%arg%" == "-m" (
+        if "%~2" == "" (
+            call :err "%arg%" must be followed by an integer.
+            goto :eof
+        )
+        set minute=%~2
+        shift
+        shift
+        goto :parse_arguments
+    ) else if "%arg%" == "--qtpi" (
+        call :qtpi
+        goto :eof
+    ) else if "%arg%" == "-h" (
+        call :show_help
+        goto :eof
+    ) else if "%arg%" == "--help" (
+        call :show_help
+        goto :eof
+    ) else if "%arg%" == "/?" (
+        call :show_help
+    ) else if "%arg%" == "-v" (
+        call :show_version
+        goto :eof
+    ) else if "%arg%" == "--version" (
+        call :show_version
+        goto :eof
+    ) else if "%arg:~0,1%" == "-" (
+        call :err Unknown option "%arg%".
+        goto :eof
+    )
 
-    rem Beep if fifteen minutes remain in a time box longer than
-    rem fifteen minutes
-    set duration=%~1
-    set time_left=%~2
-    if not %duration% == 15 (
-        if %time_left% == 15 (
+    if not "%~2" == "" (
+        call :err Surplus argument "%~2".
+        goto :eof
+    ) else if not "%arg%" == "" (
+        rem Otherwise, start the timer with the specified duration.
+        call :timer "%arg%"
+    ) else (
+        rem If no duration is specified, start the timer with the
+        rem default duration.
+        call :timer %DEFAULT_DURATION%
+    )
+
+    endlocal
+    goto :eof
+
+
+rem Run a time box timer for the specified number of minutes.
+rem
+rem Arguments:
+rem   duration: Number of minutes.
+:timer
+    setlocal
+    set /a duration = %~1
+    if errorlevel 1 (
+        call :err Bad duration: "%~1".
+        goto :eof
+    )
+    if %duration% equ 0 (
+        call :err Bad duration: "%~1".
+        goto :eof
+    ) else if %duration% geq 1000000000 (
+        call :err Bad duration: "%~1".
+        goto :eof
+    )
+    for /l %%i in (%duration%, -1, 0) do call :minute %%i
+    endlocal
+    goto :eof
+
+
+rem If the time remaining in the time box is greater than zero, then
+rem this subroutine sleeps for one minute before returning.
+rem
+rem Arguments:
+rem   time_left: Time remaining in the time box.
+:minute
+    setlocal
+    set time_left=%~1
+
+    rem Print current time and time remaining at the beginning of a
+    rem time box and when the time remaining is a multiple of 5 minutes.
+    set /a mod = %time_left% %% 5
+    if %time_left% == %duration% (
+        call :print_time %time_left%
+    ) else if %mod% == 0 (
+        call :print_time %time_left%
+    )
+
+    rem Beep at the beginning of the time box, 15 minutes from the end,
+    rem 5 minutes from the end and at the end of the time box.
+    if %time_left% == %duration% (
+        call :beep 2
+    ) else if %time_left% == 15 (
+        if not %duration% == 15 (
             call :beep 1
         )
+    ) else if %time_left% == 5 (
+        if not %duration% == 5 (
+            call :beep 2
+        )
+    ) else if %time_left% == 0 (
+        call :beep 4
+    )
+
+    rem Determine smileys to use at the end of time box.
+    if exist "%SPECIAL_FILE%" (
+        set console_msg=:-* :-* :-* :-* :-*
+        set desktop_msg=":-*    :-*    :-*    :-*    :-*"
+    ) else (
+        set console_msg=    
+        set desktop_msg=":-)    :-)    :-)    :-)    :-)"
+    )
+
+    if not %time_left% == 0 (
+        rem Sleep for a minute.
+        call :sleep %minute%
+    ) else (
+        rem Display smileys and write log at the end of the time box.
+        echo %console_msg%
+        msg %username% /w /time:10 %desktop_msg%
+        echo %date% %time:~0,-3% - %duration% >> "%LOG_FILE%"
     )
 
     endlocal
     goto :eof
 
-:sleep
-    setlocal
-    set /a seconds = %~1 + 1
-    ping -n %seconds% 127.0.0.1 > nul
+
+rem Print the current time and the time remaining in the time box.
+rem
+rem Arguments:
+rem   time_left: Time remaining in the time box.
+:print_time
+    setlocal enabledelayedexpansion
+    rem Pad the time remaining with zeroes on the left side, so that we
+    rem can select a substring of fixed size from the right side in
+    rem order to display the time left values as a fixed width column.
+    rem We do not allow a duration that exceeds nine digits. Therefore,
+    rem padding with eight zeroes is sufficient.
+    set time_left_padded=00000000%~1
+
+    rem Determine the number of characters in the duration string. We
+    rem will use these many characters to print the time left in order
+    rem to display the time left values as a fixed width column.
+    call :strlen %duration% len
+
+    rem Replace any spaces with zeros so that the current time values
+    rem are displayed as a fixed width column.
+    set time_curr=%time: =0%
+
+    rem Display time remaining in HH:MM:SS - N format where the string
+    rem length of N equals the string length of specified duration.
+    rem Note: The time_curr variable contains time in HH:MM:NN.DD
+    rem format. That is why we remove the last three characters from it.
+    echo %time_curr:~0,-3% - !time_left_padded:~-%len%!
     endlocal
     goto :eof
 
+
+rem Play one or more beeps.
+rem
+rem Arguments:
+rem   count (optional): Number of beeps to play, defaults to 1.
 :beep
     setlocal
-    if %~1. == . (
+    if "%~1" == "" (
         set /a count = 1
     ) else (
         set /a count = %~1
@@ -158,129 +240,129 @@ rem OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
     endlocal
     goto :eof
 
-:string_length
+
+rem Sleep for specified number of seconds.
+rem
+rem Arguments:
+rem   seconds: Number of seconds to sleep.
+:sleep
+    setlocal
+    set /a count = %~1 + 1
+    ping -n %count% 127.0.0.1 > nul
+    endlocal
+    goto :eof
+
+
+rem Get the length of a string.
+rem
+rem Arguments:
+rem   str: String.
+rem   len_var_name: Name of variable that should be set with the length.
+:strlen
     setlocal enabledelayedexpansion
     set str=%~1.
+    set len_var_name=%~2
     set len=0
-    for %%i in (256 128 64 32 16 8 4 2 1) do (
+
+    if not "%str:~256,1%" == "" (
+        call :err String too large.
+        goto :eof
+    )
+
+    for %%i in (128 64 32 16 8 4 2 1) do (
         if not "!str:~%%i,1!" == "" (
             set /a len += %%i
             set str=!str:~%%i!
         )
     )
     endlocal & (
-        set %~2=%len%
+        set %len_var_name%=%len%
     )
     goto :eof
 
-:echo_newlines
-    for /l %%i in (1, 1, %~1) do (
-        echo.
-    )
+
+rem Show the path of this script.
+:where_am_i
+    echo %~f0
+    call :pause
     goto :eof
 
-:echo_center
+
+rem Print dedication.
+:qtpi
     setlocal enabledelayedexpansion
-    set msg=%~1
-    call :string_length "%msg%" len
-    set /a horizontal_gap = (80 - %len%) / 2
-    for /l %%i in (1, 1, %horizontal_gap%) do (
-        set msg= !msg!
+
+    set dedication=For Sunaina, for all time
+    call :strlen "%dedication%" len
+    set /a indentation = (80 - %len%) / 2
+
+    echo %cmdcmdline% | findstr /i /c:"%~nx0" > nul && set mode=explorer
+    if "%mode%" == "explorer" (
+        for /l %%i in (1, 1, 11) do echo.
+        for /l %%i in (1, 1, %indentation%) do (
+            set dedication= !dedication!
+        )
+        echo !dedication!
+        for /l %%i in (1, 1, 12) do echo.
+        call :pause
+    ) else (
+        echo.
+        echo     %dedication%
     )
-    echo %msg%
     endlocal
     goto :eof
 
-:where_am_i
-    echo %~f0
-    if %MODE% == Explorer (
-        pause > NUL
-    )
+
+rem Print error message.
+rem
+rem Arguments:
+rem   string...: String to print to standard error stream.
+:err
+    >&2 echo %NAME%: %*
+    call :pause
     goto :eof
 
-:help
+
+rem Pause if this script was invoked from command prompt.
+:pause
+    echo %cmdcmdline% | findstr /i /c:"%~nx0" > nul && pause > nul
+    goto :eof
+
+
+rem Show help.
+:show_help
     setlocal
-    set DD=%DEFAULT_DURATION%
-    echo Usage: %NAME% [OPTION] [DURATION]
+    echo Usage: %NAME% [-w] [-h] [-v] [DURATION]
     echo.
     echo The timeboxing script runs for the number of minutes specified
     echo as the duration argument. If no duration argument is specified,
-    echo it runs for %DD% minutes. If the duration argument is echo not
-    echo a multiple of 5, it is rounded down to a multiple of 5.
+    echo it runs for %DEFAULT_DURATION% minutes.
     echo.
     echo Options:
-    echo   -w, --where     display the path where this script is present
-    echo   -h, --help, /?  display this help and exit
-    echo   -v, --version   display version information and exit
+    echo   -w, --where     Display the path where this script is present.
+    echo   -h, --help, /?  Display this help and exit.
+    echo   -v, --version   Display version information and exit.
     echo.
     echo Examples:
-    echo   %NAME%         run a %DD% minute time box
-    echo   %NAME% 15      run a 15 minute time box
-    echo   %NAME% 10      run a 10 minute time box
+    echo   %NAME%         Run a %DEFAULT_DURATION% minute time box.
+    echo   %NAME% 15      Run a 15 minute time box.
     echo.
-    echo Report bugs to ^<susam@susam.in^>.
-    if %MODE% == Explorer (
-        pause > NUL
-    )
-    endlocal
+    echo Report bugs to ^<%SUPPORT_URL%^>.
+    call :pause
     goto :eof
 
-:version
-    echo %NAME% %VERSION%
+
+rem Show version and copyright.
+:show_version
+    echo Timebox %VERSION%
     echo %COPYRIGHT%
     echo.
-    echo This is free software. You are permitted to redistribute and use it in
-    echo source and binary forms, with or without modification, under the terms
-    echo of the Simplified BSD License. See ^<%LICENSE_URL%^> for
-    echo the complete license.
+    echo This is free and open source software. You can use, copy, modify,
+    echo merge, publish, distribute, sublicense, and/or sell copies of it,
+    echo under the terms of the MIT License. You can obtain a copy of the
+    echo MIT License at <%LICENSE_URL%>.
     echo.
-    echo Written by Susam Pal.
-    if %MODE% == Explorer (
-        pause > NUL
-    )
-    goto :eof
-
-:qtpi
-    setlocal enabledelayedexpansion
-    set dedication=For Sunaina, for all time
-    if %mode% == Console (
-        echo.
-        echo     %dedication%
-    ) else (
-        call :echo_newlines 11
-        call :echo_center "%dedication%"
-        call :echo_newlines 12
-        pause > NUL
-    )
-    endlocal
-    goto :eof
-
-:bad_duration_error
-    setlocal
-    set error_msg=ERROR: Duration must be a positive integer
-    echo %error_msg%
-    if %MODE% == Explorer (
-        pause > NUL
-    )
-    endlocal
-    goto :eof
-
-:less_duration_error
-    setlocal
-    set error_msg=ERROR: Duration must be at least 5 minutes
-    echo %error_msg%
-    if %MODE% == Explorer (
-        pause > NUL
-    )
-    endlocal
-    goto :eof
-
-:more_duration_error
-    setlocal
-    set error_msg=ERROR: Duration must not exceed 90 minutes
-    echo %error_msg%
-    if %MODE% == Explorer (
-        pause > NUL
-    )
-    endlocal
+    echo This software is provided "AS IS", WITHOUT WARRANTY OF ANY KIND,
+    echo express or implied. See the MIT License for details.
+    call :pause
     goto :eof
