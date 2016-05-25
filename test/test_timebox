@@ -1,0 +1,170 @@
+#!/bin/sh
+
+# Timebox Tests.
+
+# The MIT License (MIT)
+#
+# Copyright (c) 2016 Susam Pal
+#
+# Permission is hereby granted, free of charge, to any person obtaining
+# a copy of this software and associated documentation files (the
+# "Software"), to deal in the Software without restriction, including
+# without limitation the rights to use, copy, modify, merge, publish,
+# distribute, sublicense, and/or sell copies of the Software, and to
+# permit persons to whom the Software is furnished to do so, subject to
+# the following conditions:
+#
+# The above copyright notice and this permission notice shall be
+# included in all copies or substantial portions of the Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+# EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+# MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+# IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY
+# CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
+# TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
+# SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+
+# Help output contains usage line.
+test_help()
+{
+    for opt in -h --help
+    do
+        main $opt | head -n 1 | grep -q "^Usage:" || return 1
+    done
+}
+
+
+# Version output contains version.
+test_version()
+{
+    for opt in -v --version
+    do
+        main $opt | head -n 1 | grep -q "Timebox $VERSION" || return 1
+    done
+}
+
+
+# Unknown option leads to error.
+test_unknown_option()
+{
+    main -x 2>&1 | grep -q '^.*: Unknown option "-x"\.$' || return 1
+    main --xyz 2>&1 | grep -q '^.*: Unknown option "--xyz"\.$' || return 1
+}
+
+
+
+# Surplus argument leads to error.
+test_surplus_argument()
+{
+    main 10 20 2>&1 | grep -q '^.*: Surplus argument "20"\.$'
+}
+
+
+# Option -m must be followed by an integer.
+test_m_option_missing_argument()
+{
+    main -m 2>&1 | grep -q '^.*: "-m" must be followed by an integer\.$'
+}
+
+
+# Test dedication.
+test_qtpi()
+{
+    main --qtpi | grep -q 'For Sunaina, for all time'
+}
+
+
+# When no arguments are specified, timebox defaults to 30 minutes.
+test_default_duration()
+{
+    unset MSG_COMMANDS
+    BEEP_INTERVAL=0
+    main -m 0 | sed 's/..:..:../TIME/; s/\a//g' > "$TWORK/timebox.out"
+    diff -u "$TWORK/timebox.out" "$TDATA/timebox30.out"
+}
+
+
+# Test duration argument.
+test_good_duration()
+{
+    unset MSG_COMMANDS
+    BEEP_INTERVAL=0
+    main -m 0 15 | sed 's/..:..:../TIME/; s/\a//g' > "$TWORK/timebox.out"
+    diff -u "$TWORK/timebox.out" "$TDATA/timebox15.out"
+}
+
+
+# Duration argument must be made entirely of digits.
+test_bad_duration()
+{
+    main 10foo 2>&1 | grep -q '^.*: Bad duration: "10foo"\.$'
+}
+
+
+# Duration that exceeds 9 digits is an error.
+test_large_duration()
+{
+    main 1000000000 2>&1 | grep -q '^.*: Bad duration: "1000000000"\.$'
+}
+
+
+# Duration cannot be 0.
+test_zero_duration()
+{
+    main 0 2>&1 | grep -q '^.*: Bad duration: "0"\.$'
+}
+
+
+# When timebox ends, a command to display dialog box on desktop is
+# invoked.
+test_desktop_msg()
+{
+    MSG_COMMANDS='echo msg: "$msg"'
+    BEEP_INTERVAL=0
+    main -m 0 | sed 's/\a//g' | grep -q "^msg: :-) :-) :-) :-) :-)$"
+}
+
+
+# When timebox ends, the commands specified in MSG_COMMANDS must be
+# tried one by one until one succeeds in order to display a message on
+# the desktop.
+test_desktop_msg_loop()
+{
+    MSG_COMMANDS="$(cat <<eof
+echo msg1; false
+echo msg2; false
+echo msg3: "\$msg"
+echo msg4: "\$msg"
+eof
+)"
+
+    BEEP_INTERVAL=0
+    main -m 0 | sed 's/..:..:../TIME/; s/\a//g' > "$TWORK/timebox.out"
+    diff -u "$TWORK/timebox.out" "$TDATA/timebox-msg.out"
+}
+
+
+# Test that special console message and desktop message appears when a
+# special hidden file is present.
+test_desktop_special_msg()
+{
+    MSG_COMMANDS='echo msg: "$msg"'
+    BEEP_INTERVAL=0
+    SPECIAL_FILE=$TWORK/.sunaina
+    touch "$SPECIAL_FILE"
+    main -m 0 | sed 's/..:..:../TIME/; s/\a//g' > "$TWORK/timebox.out"
+    diff -u "$TWORK/timebox.out" "$TDATA/timebox-special-msg.out"
+}
+
+
+# Test that a log is written to log file at the end of a timebox.
+test_end_log()
+{
+    unset MSG_COMMANDS
+    BEEP_INTERVAL=0
+    LOG_FILE=$TWORK/timebox.log
+    main -m 0 > /dev/null
+    grep -q "^....-..-.. ..:..:.. - 30$" "$LOG_FILE"
+}
