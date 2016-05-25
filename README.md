@@ -11,7 +11,7 @@ The Windows script has been verified on Windows 7 only. However, it
 should work fine on other recent versions of Windows too. The Linux
 script has been verified with [bash][bash], [ksh][ksh], [zsh][zsh],
 [dash][dash] and [posh][posh]; it should work fine on any POSIX
-compliant shell.
+compliant system with a POSIX compliant shell.
 
 [SHIELD_WIN]: https://img.shields.io/badge/download-timebox%2ecmd%20for%20Windows-brightgreen.svg
 [SHIELD_LIN]: https://img.shields.io/badge/download-timebox%20for%20Linux%2fMac%20OS%20X-brightgreen.svg
