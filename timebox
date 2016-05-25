@@ -1,0 +1,336 @@
+#!/bin/sh
+
+# Timebox
+
+# The MIT License (MIT)
+#
+# Copyright (c) 2013-2016 Susam Pal
+#
+# Permission is hereby granted, free of charge, to any person obtaining
+# a copy of this software and associated documentation files (the
+# "Software"), to deal in the Software without restriction, including
+# without limitation the rights to use, copy, modify, merge, publish,
+# distribute, sublicense, and/or sell copies of the Software, and to
+# permit persons to whom the Software is furnished to do so, subject to
+# the following conditions:
+#
+# The above copyright notice and this permission notice shall be
+# included in all copies or substantial portions of the Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+# EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+# MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+# IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY
+# CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
+# TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
+# SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+
+VERSION=0.2.0-DEV
+AUTHOR="Susam Pal"
+COPYRIGHT="Copyright (c) 2013-2016 $AUTHOR"
+LICENSE_URL="http://susam.in/licenses/mit/"
+SUPPORT_URL="https://github.com/susam/timebox/issues"
+NAME=${0##*/}
+
+DEFAULT_DURATION=30
+LOG_FILE=~/timebox.log
+SPECIAL_FILE=~/.sunaina
+
+
+# Starting point of this script.
+#
+# Arguments:
+#   arg...: All arguments this script was invoked with.
+main()
+{
+    parse_arguments "$@"
+}
+
+
+# Parse command line arguments passed to this script.
+#
+# Arguments:
+#   arg...: All arguments this script was invoked with.
+#
+# Errors:
+#   Exit with an error message if invalid arguments are specified.
+parse_arguments()
+{
+    minute=60
+    while [ $# -gt 0 ]
+    do
+        case $1 in
+            -m)
+                [ $# -lt 2 ] &&
+                quit \""$1"\" must be followed by an integer.
+                minute=$2
+                shift 2
+                ;;
+            --qtpi)
+                qtpi
+                exit
+                ;;
+            -h | --help)
+                show_help
+                exit
+                ;;
+            -v | --version)
+                show_version
+                exit
+                ;;
+            -?*)
+                quit Unknown option \""$1"\".
+                ;;
+            *)
+                break
+                ;;
+        esac
+    done
+
+    if [ $# -ge 2 ]
+    then
+        quit Surplus argument \""$2"\".
+    elif [ $# = 1 ]
+    then
+        timer $1
+    else
+        timer $DEFAULT_DURATION
+    fi
+}
+
+
+# Run a time box timer for the specified number of minutes.
+#
+# Arguments:
+#   duration: Number of minutes.
+timer()
+{
+    duration=$1
+
+    if ! printf "%s" "$duration" | grep -q "^[1-9][0-9]*$" ||
+       [ $duration -ge 1000000000 ]
+    then
+        quit Bad duration: \""$duration"\".
+    fi
+
+    i=$duration
+    while [ $i -ge 0 ]
+    do
+        minute $i
+        i=$(( $i - 1 ))
+    done
+
+    unset duration
+    unset i
+}
+
+
+# Generate output based on time remaining.
+#
+# If the time remaining in the time box is greater than 0, then
+# this function sleeps for one minute before returning.
+#
+# Arguments:
+#   time_left: Time remaining in the time box.
+minute()
+{
+    time_left=$1
+
+    # Print current time and time remaining at the beginning of a
+    # time box and when the time remaining is a multiple of 5 minutes.
+    if [ $time_left = $duration ] || [ $(( $time_left % 5 )) = 0 ]
+    then
+        print_time $time_left
+    fi
+
+    # Beep at the beginning of the time box, 15 minutes from the end,
+    # 5 minutes from the end and at the end of the time box.
+    if [ $time_left = $duration ]
+    then
+        beep 2 &
+    elif [ $time_left = 15 ] && [ $duration != 15 ]
+    then
+        beep 1 &
+    elif [ $time_left = 5 ] && [ $duration != 5 ]
+    then
+        beep 2 &
+    elif [ $time_left = 0 ]
+    then
+        beep 4 &
+    fi
+
+    # Determine smileys to use at the end of time box.
+    if [ -e "$SPECIAL_FILE" ]
+    then
+        console_msg=":-* :-* :-* :-* :-*"
+        desktop_msg=$console_msg
+    else
+        console_msg=":-) :-) :-) :-) :-)"
+        desktop_msg=$console_msg
+    fi
+
+    if [ $time_left != 0 ]
+    then
+        # Sleep for a minute.
+        sleep $minute
+    else
+        # Display smileys and write log at the end of the time box.
+        echo "$console_msg"
+        msg "$desktop_msg"
+        echo "$(date "+%Y-%m-%d %H:%M:%S") - $duration" >> "$LOG_FILE"
+    fi
+
+    unset console_msg
+    unset desktop_msg
+}
+
+
+# Print the current time and the time remaining in the time box.
+#
+# Arguments:
+#   time_left: Time remaining in the time box.
+print_time()
+{
+    # Pad the time remaining with zeroes on the left side, so that we
+    # can select a substring of fixed size from the right side in
+    # order to display the time left values as a fixed width column.
+    # We do not allow a duration that exceeds nine digits. Therefore,
+    # padding with eight zeroes is sufficient.
+    time_left_padded=00000000$1
+
+    # Determine the number of characters in the duration string. We
+    # will use these many characters to print the time left in order
+    # to display the time left values as a fixed width column.
+    dur_len=$(printf "%s" $duration | wc -c)
+
+    # Display time remaining in HH:MM:SS - N format where the string
+    # length of N equals the string length of specified duration.
+    echo $(date "+%H:%M:%S") - \
+         $(printf "%s" $time_left_padded | tail -c "$dur_len")
+
+    unset time_left_padded
+    unset dur_len
+}
+
+
+# Interval (in seconds) between two consecutive beeps.
+BEEP_INTERVAL=1
+
+
+# Play one or more beeps.
+#
+# Arguments:
+#   count (optional): Number of beeps to play, defaults to 1.
+beep()
+{
+    [ $# = 0 ] && count=1 || count=$1
+
+    j=0
+    while [ $j -lt $count ]
+    do
+        printf "\a"
+        sleep "$BEEP_INTERVAL"
+        j=$(( $j + 1 ))
+    done
+
+    unset count
+    unset j
+}
+
+
+# Commands to try to display message in the desktop environment.
+#
+# Each command is specified in a separate line. Blank lines and lines
+# consisting only of whitespace are ignored. Each command is tried in
+# the order specified until a command exits with status code 0.
+MSG_COMMANDS="$(cat <<eof
+zenity --timeout 10 --info --text "$msg" || [ $? -eq 5 ]
+xmessage -timeout 10 "$msg"
+eof
+)"
+
+
+# Display message in the desktop environment.
+#
+# Arguments:
+#   msg: Message to display.
+msg()
+{
+    msg=$1
+    printf "%s\n" "$MSG_COMMANDS" | grep "[[:graph:]]" |
+    while read -r cmd
+    do
+        eval "$cmd" 2> /dev/null && break
+    done
+}
+
+
+# Print dedication.
+qtpi()
+{
+    dedication="For Sunaina, for all time"
+    echo
+    echo "    $dedication"
+    echo
+}
+
+
+# Terminate the script with an error message.
+#
+# Arguments:
+#   string...: String to print to standard error stream.
+#
+# Errors:
+#   Unconditionally cause the script to terminate with an error message
+#   and exit code 1.
+quit()
+{
+    printf "%s: %s\n" "$NAME" "$*" >&2
+    exit 1
+}
+
+
+# Show help.
+show_help()
+{
+    cat <<eof
+Usage: $NAME [-w] [-h] [-v] [DURATION]
+
+The timeboxing script runs for the number of minutes specified
+as the duration argument. If no duration argument is specified,
+it runs for $DEFAULT_DURATION minutes.
+
+Options:
+  -h, --help, /?  Display this help and exit.
+  -v, --version   Display version information and exit.
+
+Examples:
+  $NAME         Run a $DEFAULT_DURATION minute time box.
+  $NAME 15      Run a 15 minute time box.
+
+Report bugs to <$SUPPORT_URL>.
+eof
+}
+
+
+# Show version and copyright.
+show_version()
+{
+    cat <<eof
+Timebox $VERSION
+$COPYRIGHT
+
+This is free and open source software. You can use, copy, modify,
+merge, publish, distribute, sublicense, and/or sell copies of it,
+under the terms of the MIT License. You can obtain a copy of the
+MIT License at <$LICENSE_URL>.
+
+This software is provided "AS IS", WITHOUT WARRANTY OF ANY KIND,
+express or implied. See the MIT License for details.
+eof
+}
+
+
+# Start.
+[ -z "$import" ] && main "$@"
