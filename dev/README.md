@@ -6,7 +6,7 @@ Tests
 All discussion about tests in this section assume that the tests are
 being run on a Debian or Debian based system. On other systems, the
 commands mentioned below may need to be modified appropriately. The
-Linux/Mac OS X *timebox* script, however, can run on any POSIX conformant
+Linux/OS X *timebox* script, however, can run on any POSIX conformant
 Unix or Linux system with any POSIX conformant shell without any changes
 to the script.
 

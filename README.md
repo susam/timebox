@@ -7,14 +7,16 @@ Timebox is a timer script that may be used to practice timeboxing.
 [![Build Status][BUILD_IMG]][BUILD_URL]
 [![Coverage Status][COVERAGE_IMG]][COVERAGE_URL]
 
-The Windows script has been verified on Windows 7 only. However, it
-should work fine on other recent versions of Windows too. The Linux
-script has been verified with [bash][bash], [ksh][ksh], [zsh][zsh],
-[dash][dash] and [posh][posh]; it should work fine on any POSIX
-compliant system with a POSIX compliant shell.
+The Windows script has been tested on Windows 7 only. However, it should
+work fine on other recent versions of Windows too.
+
+The Linux/OS X script has been tested with [bash][bash], [ksh][ksh] and
+[zsh][zsh] on Debian and OS X as well as with [dash][dash] and
+[posh][posh] on Debian. It should work fine on any POSIX compliant
+system with a POSIX compliant shell.
 
 [SHIELD_WIN]: https://img.shields.io/badge/download-timebox%2ecmd%20for%20Windows-brightgreen.svg
-[SHIELD_LIN]: https://img.shields.io/badge/download-timebox%20for%20Linux%2fMac%20OS%20X-brightgreen.svg
+[SHIELD_LIN]: https://img.shields.io/badge/download-timebox%20for%20Linux%2fOS%20X-brightgreen.svg
 [DOWNLOAD_WIN]: https://github.com/susam/timebox/releases/download/0.2.0/timebox.cmd
 [DOWNLOAD_LIN]: https://github.com/susam/timebox/releases/download/0.2.0/timebox
 
@@ -52,7 +54,7 @@ decided time interval. Once the timer notifies that the time interval
 has expired, any activity or work on the task is stopped, and a short
 break is taken before beginning another time box.
 
-This project offers a scripts for Windows, Linux and Mac OS/X that may
+This project offers scripts for Windows as well as Linux/OS X that may
 be used to run a time box for a specified duration.
 
 
@@ -61,10 +63,10 @@ Getting Started
 Timebox is a single-file executable script.
 
 Download [`timebox.cmd`][DOWNLOAD_WIN] for Windows,
-or [`timebox`][DOWNLOAD_LIN] for Linux or Mac OS X.
+or [`timebox`][DOWNLOAD_LIN] for Linux or OS X.
 
 Copy it to a directory specified in the PATH environment variable. On
-Linux or Mac OS X, make the script executable: `chmod u+x timebox`.
+Linux or OS X, make the script executable: `chmod u+x timebox`.
 
 To run a 30 minute time box, run the script without any arguments.
 
