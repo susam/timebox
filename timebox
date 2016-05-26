@@ -164,10 +164,10 @@ minute()
     if [ -e "$SPECIAL_FILE" ]
     then
         console_msg=":-* :-* :-* :-* :-*"
-        desktop_msg=$console_msg
+        desktop_msg=":-*    :-*    :-*    :-*    :-*"
     else
         console_msg=":-) :-) :-) :-) :-)"
-        desktop_msg=$console_msg
+        desktop_msg=":-)    :-)    :-)    :-)    :-)"
     fi
 
     if [ $time_left != 0 ]
@@ -242,6 +242,7 @@ beep()
 MSG_COMMANDS="$(cat <<eof
 zenity --timeout 10 --info --text "\$msg" || [ \$? -eq 5 ]
 xmessage -timeout 10 "\$msg"
+osascript -e "tell app \"System Events\" to display alert \"\$msg\" giving up after 2" > /dev/null 2>&1
 eof
 )"
 

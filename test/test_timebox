@@ -125,7 +125,7 @@ test_desktop_msg()
 {
     MSG_COMMANDS='echo msg: "$msg"'
     main -m 0 | sed 's/[^[:print:]]//g' |
-    grep -q "^msg: :-) :-) :-) :-) :-)$"
+    grep -q "^msg: :-)    :-)    :-)    :-)    :-)$"
 }
 
 
