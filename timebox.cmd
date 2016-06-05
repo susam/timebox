@@ -31,7 +31,7 @@ rem Starting point of this script.
     setlocal
 
     rem Script data.
-    set VERSION=0.2.0-DEV
+    set VERSION=0.2.0
     set AUTHOR=Susam Pal
     set COPYRIGHT=Copyright (c) 2013-2016 %AUTHOR%
     set LICENSE_URL=http://susam.in/licenses/mit/
