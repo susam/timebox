@@ -86,6 +86,19 @@ To learn more about the usage of the script, run the following command.
 
     timebox --help
 
+After the script starts, it displays a countdown starting with the
+specified duration to 0. The countdown is displayed at the beginning of
+a time box and whenever the number of minutes remaining in the time box
+is a multiple of 5.
+
+Two beeps are played at the beginning of a time box. If the duration of
+the time box is longer then 15 minutes, one beep is played when 15
+minutes are remaining in the time box. If the duration of the time box
+is longer than 5 minutes, two beeps are played when 5 minutes are
+remaining in the time box. Four beeps are played at the end of a time
+box. A dialog box with smileys is displayed for ten seconds at the end
+of a time box.
+
 
 License
 -------
