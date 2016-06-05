@@ -134,7 +134,7 @@ directory as the current directory.
   - Confirm that code coverage looks good.
   - Tag the release.
 
-        git tag -a <VERSION> -m "Todo <VERSION>"
+        git tag -a <VERSION> -m "Timebox <VERSION>"
         git push origin <VERSION>
 
   - Upload timebox.cmd and timebox to GitHub release page.
