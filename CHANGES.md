@@ -1,6 +1,10 @@
 Changelog
 =========
 
+0.3.0 (UNRELEASED)
+------------------
+- NEW: Display time remaining in the title bar of Windows Command Prompt.
+
 0.2.0 (2016-06-05)
 ------------------
 - NEW: Timebox script for Linux and OS/X.

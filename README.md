@@ -89,7 +89,9 @@ To learn more about the usage of the script, run the following command.
 After the script starts, it displays a countdown starting with the
 specified duration to 0. The countdown is displayed at the beginning of
 a time box and whenever the number of minutes remaining in the time box
-is a multiple of 5.
+is a multiple of 5. On Windows, the time remaining is also displayed in
+the title bar of the Command Prompt window; the title bar is updated
+every minute.
 
 Two beeps are played at the beginning of a time box. If the duration of
 the time box is longer then 15 minutes, one beep is played when 15

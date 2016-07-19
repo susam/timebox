@@ -31,7 +31,7 @@ rem Starting point of this script.
     setlocal
 
     rem Script data.
-    set VERSION=0.2.0
+    set VERSION=0.3.0-DEV
     set AUTHOR=Susam Pal
     set COPYRIGHT=Copyright (c) 2013-2016 %AUTHOR%
     set LICENSE_URL=http://susam.in/licenses/mit/
@@ -143,6 +143,9 @@ rem   time_left: Time remaining in the time box.
 :minute
     setlocal
     set time_left=%~1
+
+    rem Display time remaining in the terminal window.
+    title %time_left%
 
     rem Print current time and time remaining at the beginning of a
     rem time box and when the time remaining is a multiple of 5 minutes.
