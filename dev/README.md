@@ -135,6 +135,7 @@ directory as the current directory.
   - Tag the release.
 
         git tag -a <VERSION> -m "Timebox <VERSION>"
-        git push origin <VERSION>
+        git push
+        git push --tags
 
   - Upload timebox.cmd and timebox to GitHub release page.
