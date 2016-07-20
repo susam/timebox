@@ -3,32 +3,8 @@ os:
     - osx
 
 install:
-    - |
-        # Install packages to build kcov.
-        if [ -f /etc/debian_version ]
-        then
-            sudo apt-get update
-            sudo apt-get install g++ pkg-config libcurl4-gnutls-dev libelf-dev libdw-dev zlib1g-dev
-        fi
-
-    - |
-        # Build and install kcov.
-        if [ -f /etc/debian_version ]
-        then
-            git clone https://github.com/SimonKagstrom/kcov.git
-            mkdir kcov/build
-            cd kcov/build
-            cmake ..
-            make
-            sudo make install
-            cd ../..
-        fi
-    - |
-        # Install shells.
-        if [ -f /etc/debian_version ]
-        then
-            sudo apt-get install ksh zsh posh
-        fi
+    - if [ -f /etc/debian_version ]; then sudo make install_kcov; fi
+    - if [ -f /etc/debian_version ]; then sudo make install_shells; fi
 
 script:
     - if [ -f /etc/debian_version ]; then make alltest; fi

@@ -1,22 +1,33 @@
+# Install test tools.
+install_kcov:
+	apt-get update
+	apt-get install g++ pkg-config libcurl4-gnutls-dev libelf-dev libdw-dev zlib1g-dev
+	git clone https://github.com/SimonKagstrom/kcov.git
+	mkdir kcov/build
+	cd kcov/build && cmake .. && make && make install
+
+install_shells:
+	apt-get update
+	apt-get install ksh zsh posh
+
+
+# Run tests.
 test: .FORCE
 	sh test/test
 
+alltest: test unixtest posixtest
+
 unixtest:
-	echo Testing with bash ...
 	bash test/test
-	echo Testing with ksh ...
 	ksh test/test
-	echo Testing with zsh ...
 	zsh test/test
 
 posixtest:
-	echo Testing with dash ...
 	dash test/test
-	echo Testing with posh ...
 	posh test/test
 
-alltest: test unixtest posixtest
 
+# Measure code coverage. 
 coverage: .FORCE
 	rm -rf coverage
 	kcov --exclude-path=test/test coverage test/test
@@ -25,7 +36,14 @@ coveralls:
 	rm -rf coverage
 	kcov --coveralls-id=$$TRAVIS_JOB_ID --exclude-path=test/test coverage test/test
 
+
+# Cleanup
 clean:
 	rm -rf coverage
 
+
+# Meta
 .FORCE:
+
+
+# vim: noet
