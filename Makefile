@@ -8,7 +8,7 @@ install_kcov:
 
 install_shells:
 	apt-get update
-	apt-get install ksh zsh posh
+	apt-get install ksh zsh posh yash
 
 
 # Run tests.
@@ -25,6 +25,7 @@ unixtest:
 posixtest:
 	dash test/test
 	posh test/test
+	yash test/test
 
 
 # Measure code coverage. 
