@@ -10,10 +10,10 @@ Timebox is a timer script that may be used to practice timeboxing.
 The Windows script has been tested on Windows 7 only. However, it should
 work fine on other recent versions of Windows too.
 
-The Linux/OS X script has been tested with [bash][bash], [ksh][ksh] and
-[zsh][zsh] on Debian and OS X as well as with [dash][dash] and
-[posh][posh] on Debian. It should work fine on any POSIX compliant
-system with a POSIX compliant shell.
+The Linux/OS X script has been tested with [bash][], [ksh][] and [zsh][]
+on Debian and OS X as well as with [dash][], [posh][] and [yash][] on
+Debian. It should work fine on any POSIX compliant system with a POSIX
+compliant shell.
 
 [SHIELD_WIN]: https://img.shields.io/badge/download-timebox%2ecmd%20for%20Windows-brightgreen.svg
 [SHIELD_LIN]: https://img.shields.io/badge/download-timebox%20for%20Linux%2fOS%20X-brightgreen.svg
@@ -30,6 +30,7 @@ system with a POSIX compliant shell.
 [zsh]: https://packages.debian.org/stable/zsh
 [dash]: https://packages.debian.org/stable/dash
 [posh]: https://packages.debian.org/stable/posh
+[yash]: https://packages.debian.org/stable/yash
 
 
 Contents
