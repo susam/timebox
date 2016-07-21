@@ -5,31 +5,25 @@ Tests
 -----
 All discussion about tests in this section assume that the tests are
 being run on a Debian or Debian based system. On other systems, the
-commands mentioned below may need to be modified appropriately. The
-Linux/OS X *timebox* script, however, can run on any POSIX conformant
-Unix or Linux system with any POSIX conformant shell without any changes
-to the script.
+commands in Makefile may need to be modified appropriately. The Linux/OS
+X *timebox* script, however, can run on any POSIX conformant Unix or
+Linux system with any POSIX conformant shell without any changes to the
+script.
 
 The Windows timebox.cmd script is not discussed in this document at all.
 There are no tests for it.
 
 ### Setup Test Environment ###
-Enter the following commands as root to install kcov. It is used to
+Change the current directory to the top level directory of this project
+and enter the following command as root to install kcov. It is used to
 measure code coverage of the tests.
 
-    apt-get update
-    apt-get install g++ pkg-config libcurl4-gnutls-dev libelf-dev libdw-dev zlib1g-dev
-    git clone https://github.com/SimonKagstrom/kcov.git
-    mkdir kcov/build
-    cd kcov/build
-    cmake ..
-    make
-    make install
+    make install_kcov
 
 Enter the following command to install the shells required for testing
 cross-shell compatibility.
 	
-	apt-get install bash ksh dash posh
+	make install_shells
 
 ### Run Tests ###
 Change current directory to the top level directory of this project and
@@ -38,7 +32,7 @@ enter the following command to run a quick test with sh.
 	make test
 
 Now enter the following command to run a complete test with sh, bash,
-ksh and dash.
+ksh, dash and yash.
 
 	make alltest
 
