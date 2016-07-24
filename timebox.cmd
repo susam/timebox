@@ -188,7 +188,7 @@ rem   time_left: Time remaining in the time box.
         rem Display smileys and write log at the end of the time box.
         echo %console_msg%
         msg %username% /w /time:10 %desktop_msg%
-        echo %date% %time:~0,-3% - %duration% >> "%LOG_FILE%"
+        >> "%LOG_FILE%" echo %date% %time:~0,-3% - %duration%
     )
 
     endlocal

@@ -100,7 +100,9 @@ minutes are remaining in the time box. If the duration of the time box
 is longer than 5 minutes, two beeps are played when 5 minutes are
 remaining in the time box. Four beeps are played at the end of a time
 box. A dialog box with smileys is displayed for ten seconds at the end
-of a time box.
+of a time box. The time at which a time box ends and its duration is
+written to %userprofile%\timebox.log on Windows and ~/timebox.log on
+Linux/OS X at the end of a time box.
 
 
 License
