@@ -7,6 +7,6 @@ install:
     - if [ -f /etc/debian_version ]; then sudo make install_shells; fi
 
 script:
-    - if [ -f /etc/debian_version ]; then make alltest; fi
+    - if [ -f /etc/debian_version ]; then make test_all; fi
     - if [ -f /etc/debian_version ]; then make coveralls; fi
-    - if uname | grep Darwin; then make unixtest; fi
+    - if uname | grep Darwin; then make test_unix; fi

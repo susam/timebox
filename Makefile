@@ -15,14 +15,14 @@ install_shells:
 test: .FORCE
 	sh test/test
 
-alltest: test unixtest posixtest
+test_all: test test_unix test_posix
 
-unixtest:
+test_unix:
 	bash test/test
 	ksh test/test
 	zsh test/test
 
-posixtest:
+test_posix:
 	dash test/test
 	posh test/test
 	yash test/test
