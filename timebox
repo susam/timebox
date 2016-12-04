@@ -35,7 +35,7 @@ NAME=${0##*/}
 
 DEFAULT_DURATION=30
 LOG_FILE=~/timebox.log
-SPECIAL_FILE=~/.sunaina
+CONF_FILE=~/.timebox.conf
 
 
 # Starting point of this script.
@@ -45,6 +45,8 @@ SPECIAL_FILE=~/.sunaina
 main()
 {
     parse_arguments "$@"
+    parse_configuration
+    timer "$duration_arg"
 }
 
 
@@ -91,12 +93,35 @@ parse_arguments()
     if [ $# -ge 2 ]
     then
         quit Surplus argument \""$2"\".
-    elif [ $# = 1 ]
+    elif [ $# -eq 1 ]
     then
-        timer $1
+        duration_arg="$1"
     else
-        timer $DEFAULT_DURATION
+        duration_arg=$DEFAULT_DURATION
     fi
+}
+
+
+# Parse configuration file.
+parse_configuration()
+{
+    # If configuration file does not exist, there is nothing to parse.
+    [ -e "$CONF_FILE" ] || return
+
+    # Regular expressions to match start of word.
+    sow="(^|[[:space:]])"
+
+    # Regular expressions to match end of word.
+    eow="($|[[:space:]])"
+
+    # quiet: Do not beep in the middle of time box.
+    grep -q -E "${sow}quiet${eow}" "$CONF_FILE" && quiet=yes
+
+    # qtpi: Special message.
+    grep -q -E "${sow}qtpi${eow}" "$CONF_FILE" && qtpi=yes
+
+    # sober: EOT message.
+    grep -q -E "${sow}sober${eow}" "$CONF_FILE" && sober=yes
 }
 
 
@@ -149,10 +174,10 @@ minute()
     if [ $time_left = $duration ]
     then
         beep 2
-    elif [ $time_left = 15 ] && [ $duration != 15 ]
+    elif [ $time_left = 15 ] && [ $duration != 15 ] && [ "$quiet" != "yes" ]
     then
         beep 1
-    elif [ $time_left = 5 ] && [ $duration != 5 ]
+    elif [ $time_left = 5 ] && [ $duration != 5 ] && [ "$quiet" != "yes" ]
     then
         beep 2
     elif [ $time_left = 0 ]
@@ -161,10 +186,14 @@ minute()
     fi
 
     # Determine smileys to use at the end of time box.
-    if [ -e "$SPECIAL_FILE" ]
+    if [ "$qtpi" = "yes" ]
     then
         console_msg=":-* :-* :-* :-* :-*"
         desktop_msg=":-*    :-*    :-*    :-*    :-*"
+    elif [ "$sober" = "yes" ]
+    then
+        console_msg=EOT
+        desktop_msg=EOT
     else
         console_msg=":-) :-) :-) :-) :-)"
         desktop_msg=":-)    :-)    :-)    :-)    :-)"

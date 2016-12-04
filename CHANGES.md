@@ -4,6 +4,9 @@ Changelog
 0.3.0 (UNRELEASED)
 ------------------
 - NEW: Display time remaining in the title bar of Windows Command Prompt.
+- NEW: Tweak behaviour with configuration file at ~/.timebox.conf.
+- NEW: Configuration option 'quiet': Do not beep in the middle of time box.
+- NEW: Configuration option 'eot': Show "EOT" instead of smileys at the end.
 
 0.2.0 (2016-06-05)
 ------------------

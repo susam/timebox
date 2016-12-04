@@ -105,6 +105,34 @@ written to %userprofile%\timebox.log on Windows and ~/timebox.log on
 Linux/OS X at the end of a time box.
 
 
+Configuration
+-------------
+The behaviour of the script can be tweaked a little bit with a
+configuration file at `~/.timeboxrc`, i.e. `%userprofile%\.timeboxrc`
+on Windows and `$HOME/.timeboxrc` on Linux or OS X.
+
+The script recognizes the following keywords (configuration options) in
+the configuration file.
+
+  1. `quiet` - Do not beep in the middle of a time box. Without this
+               option, the script beeps once when 15 minutes are left
+               and twice more when 5 minutes are left. This can be
+               distracting on OS X where the beeps cause the icon for
+               the terminal running the script to bounce in the Dock.
+               With this configuration option, the beeps occur only at
+               the start and the end of a time box.
+  2. `sober` - Display the message "EOT" instead of smileys when a time
+               box ends.
+
+A configuration keyword may occur anywhere in the configuration file.
+The only requirement is that the keyword must appear as a word, i.e. it
+must either occur at the beginning of a line or follow a whitespace
+character and it must also either occur at the end of a line or followed
+by a whitespace character. Therefore, multiple configuration keywords
+may occur in the same line or on different lines. Any text in the
+configuration file that is not a configuration keyword is ignored.
+
+
 License
 -------
 This is free and open source software. You can use, copy, modify,

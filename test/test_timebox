@@ -26,6 +26,40 @@
 # SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 
+# Test home directory where configuration file is read from and log file
+# is written to.
+HOME=$TWORK
+
+
+# Newline character.
+NL="
+"
+
+# Bell character.
+BELL=$(printf "\a")
+
+
+# Test helper function to display bell characters as "<BELL>"
+show_bell()
+{
+    sed "s/$BELL/<BELL>\\$NL/g"
+}
+
+
+# Test helper function that removes bell characters.
+hide_bell()
+{
+    sed "s/$BELL//g"
+}
+
+
+# Test helper function that replaces time field with "TIME".
+norm_time()
+{
+    sed 's/[0-2][0-9]:[0-5][0-9]:[0-5][0-9]/TIME/'
+}
+
+
 # Help output contains usage line.
 test_help()
 {
@@ -81,10 +115,8 @@ test_default_duration()
 {
     unset MSG_COMMANDS
 
-    main -m 0 |
-    sed 's/..:..:../TIME/; s/[^[:print:]]//g' > "$TWORK/timebox.out"
+    main -m 0 | norm_time | hide_bell > "$TWORK/timebox.out"
     diff -u "$TWORK/timebox.out" "$TDATA/timebox30.out"
-    cp "$TWORK/timebox.out" out.out
 }
 
 
@@ -92,8 +124,7 @@ test_default_duration()
 test_good_duration()
 {
     unset MSG_COMMANDS
-    main -m 0 15 |
-    sed 's/..:..:../TIME/; s/[^[:print:]]//g' > "$TWORK/timebox.out"
+    main -m 0 15 | norm_time | hide_bell > "$TWORK/timebox.out"
     diff -u "$TWORK/timebox.out" "$TDATA/timebox15.out"
 }
 
@@ -101,7 +132,8 @@ test_good_duration()
 # Duration argument must be made entirely of digits.
 test_bad_duration()
 {
-    main 10foo 2>&1 | grep -q '^.*: Bad duration: "10foo"\.$'
+    main 10foo 2>&1 | grep -q '^.*: Bad duration: "10foo"\.$' || return 1
+    main 0 2>&1 | grep -q '^.*: Bad duration: "0"\.$' || return 1
 }
 
 
@@ -124,7 +156,7 @@ test_zero_duration()
 test_desktop_msg()
 {
     MSG_COMMANDS='echo msg: "$msg"'
-    main -m 0 | sed 's/[^[:print:]]//g' |
+    main -m 0 | hide_bell |
     grep -q "^msg: :-)    :-)    :-)    :-)    :-)$"
 }
 
@@ -142,22 +174,8 @@ echo msg4: "\$msg"
 eof
 )"
 
-    main -m 0 |
-    sed 's/..:..:../TIME/; s/[^[:print:]]//g' > "$TWORK/timebox.out"
+    main -m 0 | norm_time | hide_bell > "$TWORK/timebox.out"
     diff -u "$TWORK/timebox.out" "$TDATA/timebox-msg.out"
-}
-
-
-# Test that special console message and desktop message appears when a
-# special hidden file is present.
-test_desktop_special_msg()
-{
-    MSG_COMMANDS='echo msg: "$msg"'
-    SPECIAL_FILE=$TWORK/.sunaina
-    touch "$SPECIAL_FILE"
-    main -m 0 |
-    sed 's/..:..:../TIME/; s/[^[:print:]]//g' > "$TWORK/timebox.out"
-    diff -u "$TWORK/timebox.out" "$TDATA/timebox-special-msg.out"
 }
 
 
@@ -165,7 +183,102 @@ test_desktop_special_msg()
 test_end_log()
 {
     unset MSG_COMMANDS
-    LOG_FILE=$TWORK/timebox.log
     main -m 0 > /dev/null
     grep -q "^....-..-.. ..:..:.. - 30$" "$LOG_FILE"
+}
+
+
+# Test output and beeps for default duration.
+test_duration_default()
+{
+    unset MSG_COMMANDS
+    main -m 0 | norm_time | show_bell > "$TWORK/timebox.out"
+    diff -u "$TWORK/timebox.out" "$TDATA/timebox-duration-default.out"
+}
+
+
+# Test output and beeps for default duration.
+test_duration_16()
+{
+    unset MSG_COMMANDS
+    main -m 0 16 | norm_time | show_bell > "$TWORK/timebox.out"
+    diff -u "$TWORK/timebox.out" "$TDATA/timebox-duration-16.out"
+}
+
+
+# Test output and beeps for default duration.
+test_duration_15()
+{
+    unset MSG_COMMANDS
+    main -m 0 15 | norm_time | show_bell > "$TWORK/timebox.out"
+    diff -u "$TWORK/timebox.out" "$TDATA/timebox-duration-15.out"
+}
+
+
+# Test output and beeps for default duration.
+test_duration_6()
+{
+    unset MSG_COMMANDS
+    main -m 0 6 | norm_time | show_bell > "$TWORK/timebox.out"
+    diff -u "$TWORK/timebox.out" "$TDATA/timebox-duration-6.out"
+}
+
+
+# Test output and beeps for default duration.
+test_duration_5()
+{
+    unset MSG_COMMANDS
+    main -m 0 5 | norm_time | show_bell > "$TWORK/timebox.out"
+    diff -u "$TWORK/timebox.out" "$TDATA/timebox-duration-5.out"
+}
+
+
+# Test output and beeps for default duration.
+test_duration_1()
+{
+    unset MSG_COMMANDS
+    main -m 0 1 | norm_time | show_bell > "$TWORK/timebox.out"
+    diff -u "$TWORK/timebox.out" "$TDATA/timebox-duration-1.out"
+}
+
+# Test configuration option: quiet.
+test_conf_quiet()
+{
+    unset MSG_COMMANDS
+    echo quiet > "$TWORK/.timebox.conf"
+    main -m 0 | norm_time | show_bell > "$TWORK/timebox.out"
+    diff -u "$TWORK/timebox.out" "$TDATA/timebox-conf-quiet.out"
+}
+
+# Test configuration option: quiet.
+test_conf_sober()
+{
+    MSG_COMMANDS='echo msg: "$msg"'
+    echo sober > $TWORK/.timebox.conf
+    main -m 0 | norm_time | show_bell > "$TWORK/timebox.out"
+    diff -u "$TWORK/timebox.out" "$TDATA/timebox-conf-sober.out"
+}
+
+# Test configuration: qtpi.
+test_conf_qtpi()
+{
+    MSG_COMMANDS='echo msg: "$msg"'
+    echo qtpi > $TWORK/.timebox.conf
+    main -m 0 | norm_time | show_bell > "$TWORK/timebox.out"
+    diff -u "$TWORK/timebox.out" "$TDATA/timebox-conf-qtpi.out"
+}
+
+# Test multiple configurations.
+test_conf_multi()
+{
+    MSG_COMMANDS='echo msg: "$msg"'
+
+    echo quiet sober > $TWORK/.timebox.conf
+    main -m 0 | norm_time | show_bell > "$TWORK/timebox.out"
+    diff -u "$TWORK/timebox.out" "$TDATA/timebox-conf-multi.out" || return 1
+
+    echo quiet > $TWORK/.timebox.conf
+    echo sober >> $TWORK/.timebox.conf
+    main -m 0 | norm_time | show_bell > "$TWORK/timebox.out"
+    diff -u "$TWORK/timebox.out" "$TDATA/timebox-conf-multi.out" || return 1
 }

@@ -41,11 +41,13 @@ rem Starting point of this script.
     rem Timer data.
     set DEFAULT_DURATION=30
     set LOG_FILE=%userprofile%\timebox.log
-    set SPECIAL_FILE=%userprofile%\.sunaina
+    set CONF_FILE=%userprofile%\.timeboxrc
 
     rem Parse arguments and start timer.
     set minute=60
     call :parse_arguments %*
+    call :parse_configuration
+    call :timer %duration_arg%
 
     endlocal
     goto :eof
@@ -56,7 +58,6 @@ rem
 rem Arguments:
 rem   arg...: All arguments this script was invoked with.
 :parse_arguments
-    setlocal
     set arg=%~1
     rem Handle command line arguments
     if "%arg%" == "-w" (
@@ -100,17 +101,33 @@ rem   arg...: All arguments this script was invoked with.
         call :err Surplus argument "%~2".
         goto :eof
     ) else if not "%arg%" == "" (
-        rem Otherwise, start the timer with the specified duration.
-        call :timer "%arg%"
+        set duration_arg=%arg%
     ) else (
-        rem If no duration is specified, start the timer with the
-        rem default duration.
-        call :timer %DEFAULT_DURATION%
+        set duration_arg=%DEFAULT_DURATION%
     )
 
-    endlocal
+    set arg=
     goto :eof
 
+
+rem Parse configuration file.
+:parse_configuration
+    rem If configuration file does not exist, there is nothing to parse.
+    if not exist %CONF_FILE% goto :eof
+
+    rem quiet: Do not beep in the middle of timebox.
+    findstr "\<quiet\>" %CONF_FILE% > nul
+    if not errorlevel 1 set quiet=yes
+
+    rem qtpi: Special message.
+    findstr "\<qtpi\>" %CONF_FILE% > nul
+    if not errorlevel 1 set qtpi=yes
+
+    rem sober: "EOT" instead of smileys at the end of timebox.
+    findstr "\<sober\>" %CONF_FILE% > nul
+    if not errorlevel 1 set sober=yes
+
+    goto :eof
 
 rem Run a time box timer for the specified number of minutes.
 rem
@@ -162,20 +179,27 @@ rem   time_left: Time remaining in the time box.
         call :beep 2
     ) else if %time_left% == 15 (
         if not %duration% == 15 (
-            call :beep 1
+            if not "%quiet%" == "yes" (
+                call :beep 1
+            )
         )
     ) else if %time_left% == 5 (
         if not %duration% == 5 (
-            call :beep 2
+            if not "%quiet%" == "yes" (
+                call :beep 2
+            )
         )
     ) else if %time_left% == 0 (
         call :beep 4
     )
 
     rem Determine smileys to use at the end of time box.
-    if exist "%SPECIAL_FILE%" (
+    if "%qtpi%" == "yes" (
         set console_msg=:-* :-* :-* :-* :-*
         set desktop_msg=":-*    :-*    :-*    :-*    :-*"
+    ) else if "%sober%" == "yes" (
+        set console_msg=EOT
+        set desktop_msg=EOT
     ) else (
         set console_msg=    
         set desktop_msg=":-)    :-)    :-)    :-)    :-)"
