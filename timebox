@@ -35,7 +35,7 @@ NAME=${0##*/}
 
 DEFAULT_DURATION=30
 LOG_FILE=~/timebox.log
-CONF_FILE=~/.timebox.conf
+CONF_FILE=~/.timeboxrc
 
 
 # Starting point of this script.

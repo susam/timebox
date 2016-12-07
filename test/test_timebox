@@ -245,7 +245,7 @@ test_duration_1()
 test_conf_quiet()
 {
     unset MSG_COMMANDS
-    echo quiet > "$TWORK/.timebox.conf"
+    echo quiet > "$TWORK/.timeboxrc"
     main -m 0 | norm_time | show_bell > "$TWORK/timebox.out"
     diff -u "$TWORK/timebox.out" "$TDATA/timebox-conf-quiet.out"
 }
@@ -254,7 +254,7 @@ test_conf_quiet()
 test_conf_sober()
 {
     MSG_COMMANDS='echo msg: "$msg"'
-    echo sober > $TWORK/.timebox.conf
+    echo sober > $TWORK/.timeboxrc
     main -m 0 | norm_time | show_bell > "$TWORK/timebox.out"
     diff -u "$TWORK/timebox.out" "$TDATA/timebox-conf-sober.out"
 }
@@ -263,7 +263,7 @@ test_conf_sober()
 test_conf_qtpi()
 {
     MSG_COMMANDS='echo msg: "$msg"'
-    echo qtpi > $TWORK/.timebox.conf
+    echo qtpi > $TWORK/.timeboxrc
     main -m 0 | norm_time | show_bell > "$TWORK/timebox.out"
     diff -u "$TWORK/timebox.out" "$TDATA/timebox-conf-qtpi.out"
 }
@@ -273,12 +273,12 @@ test_conf_multi()
 {
     MSG_COMMANDS='echo msg: "$msg"'
 
-    echo quiet sober > $TWORK/.timebox.conf
+    echo quiet sober > $TWORK/.timeboxrc
     main -m 0 | norm_time | show_bell > "$TWORK/timebox.out"
     diff -u "$TWORK/timebox.out" "$TDATA/timebox-conf-multi.out" || return 1
 
-    echo quiet > $TWORK/.timebox.conf
-    echo sober >> $TWORK/.timebox.conf
+    echo quiet > $TWORK/.timeboxrc
+    echo sober >> $TWORK/.timeboxrc
     main -m 0 | norm_time | show_bell > "$TWORK/timebox.out"
     diff -u "$TWORK/timebox.out" "$TDATA/timebox-conf-multi.out" || return 1
 }
