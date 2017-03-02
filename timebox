@@ -4,7 +4,7 @@
 
 # The MIT License (MIT)
 #
-# Copyright (c) 2013-2016 Susam Pal
+# Copyright (c) 2013-2017 Susam Pal
 #
 # Permission is hereby granted, free of charge, to any person obtaining
 # a copy of this software and associated documentation files (the
@@ -26,9 +26,9 @@
 # SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 
-VERSION=0.3.0-DEV
+VERSION=0.3.0
 AUTHOR="Susam Pal"
-COPYRIGHT="Copyright (c) 2013-2016 $AUTHOR"
+COPYRIGHT="Copyright (c) 2013-2017 $AUTHOR"
 LICENSE_URL="http://susam.in/licenses/mit/"
 SUPPORT_URL="https://github.com/susam/timebox/issues"
 NAME=${0##*/}

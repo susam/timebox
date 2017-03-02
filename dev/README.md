@@ -1,5 +1,5 @@
-Todo Developer Notes
-====================
+Timebox Developer Notes
+=======================
 
 Tests
 -----
@@ -22,7 +22,7 @@ measure code coverage of the tests.
 
 Enter the following command to install the shells required for testing
 cross-shell compatibility.
-	
+
 	make install_shells
 
 ### Run Tests ###
@@ -121,11 +121,17 @@ directory as the current directory.
   - Run tests.
 
         make test
-        make alltest
+        make test_all
         make coverage
         firefox coverage/index.html &
 
   - Confirm that code coverage looks good.
+  - Commit changes.
+
+        git status
+        git diff
+        git commit -a
+
   - Tag the release.
 
         git tag -a <VERSION> -m "Timebox <VERSION>"
