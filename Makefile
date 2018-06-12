@@ -1,7 +1,7 @@
 # Install test tools.
 install_kcov:
 	apt-get update
-	apt-get install g++ pkg-config libcurl4-gnutls-dev libelf-dev libdw-dev zlib1g-dev
+	apt-get install g++ pkg-config libcurl4-gnutls-dev libelf-dev libdw-dev zlib1g-dev cmake
 	git clone https://github.com/SimonKagstrom/kcov.git
 	mkdir kcov/build
 	cd kcov/build && cmake .. && make && make install
