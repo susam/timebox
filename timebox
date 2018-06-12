@@ -269,9 +269,9 @@ beep()
 # consisting only of whitespace are ignored. Each command is tried in
 # the order specified until a command exits with status code 0.
 MSG_COMMANDS="$(cat <<eof
+osascript -e "tell app \"System Events\" to display alert \"\$msg\" giving up after 2" > /dev/null 2>&1
 zenity --timeout 10 --info --text "\$msg" || [ \$? -eq 5 ]
 xmessage -timeout 10 "\$msg"
-osascript -e "tell app \"System Events\" to display alert \"\$msg\" giving up after 2" > /dev/null 2>&1
 eof
 )"
 
