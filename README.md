@@ -10,10 +10,10 @@ Timebox is a timer script that may be used to practice timeboxing.
 The Windows script has been tested on Windows 7 only. However, it should
 work fine on other recent versions of Windows too.
 
-The Linux/OS X script has been tested with [bash][], [ksh][] and [zsh][]
-on Debian and OS X as well as with [dash][], [posh][] and [yash][] on
-Debian. It should work fine on any POSIX compliant system with a POSIX
-compliant shell.
+The Linux/macOS script has been tested with [bash][], [ksh][] and
+[zsh][] on Debian and macOS as well as with [dash][], [posh][] and
+[yash][] on Debian. It should work fine on any POSIX compliant system
+with a POSIX compliant shell.
 
 [SHIELD_WIN]: https://img.shields.io/badge/download-timebox%2ecmd%20for%20Windows-brightgreen.svg
 [SHIELD_LIN]: https://img.shields.io/badge/download-timebox%20for%20Linux%2fOS%20X-brightgreen.svg
@@ -55,7 +55,7 @@ decided time interval. Once the timer notifies that the time interval
 has expired, any activity or work on the task is stopped, and a short
 break is taken before beginning another time box.
 
-This project offers scripts for Windows as well as Linux/OS X that may
+This project offers scripts for Windows as well as Linux/macOS that may
 be used to run a time box for a specified duration.
 
 
@@ -64,10 +64,10 @@ Getting Started
 Timebox is a single-file executable script.
 
 Download [`timebox.cmd`][DOWNLOAD_WIN] for Windows,
-or [`timebox`][DOWNLOAD_LIN] for Linux or OS X.
+or [`timebox`][DOWNLOAD_LIN] for Linux or macOS.
 
 Copy it to a directory specified in the PATH environment variable. On
-Linux or OS X, make the script executable: `chmod u+x timebox`.
+Linux or macOS, make the script executable: `chmod u+x timebox`.
 
 To run a 30 minute time box, run the script without any arguments.
 
@@ -102,14 +102,14 @@ remaining in the time box. Four beeps are played at the end of a time
 box. A dialog box with smileys is displayed for ten seconds at the end
 of a time box. The time at which a time box ends and its duration is
 written to %userprofile%\timebox.log on Windows and ~/timebox.log on
-Linux/OS X at the end of a time box.
+Linux/macOS at the end of a time box.
 
 
 Configuration
 -------------
 The behaviour of the script can be tweaked a little bit with a
 configuration file at `~/.timeboxrc`, i.e. `%userprofile%\.timeboxrc`
-on Windows and `$HOME/.timeboxrc` on Linux or OS X.
+on Windows and `$HOME/.timeboxrc` on Linux or macOS.
 
 The script recognizes the following keywords (configuration options) in
 the configuration file.
@@ -117,7 +117,7 @@ the configuration file.
   1. `quiet` - Do not beep in the middle of a time box. Without this
                option, the script beeps once when 15 minutes are left
                and twice more when 5 minutes are left. This can be
-               distracting on OS X where the beeps cause the icon for
+               distracting on macOS where the beeps cause the icon for
                the terminal running the script to bounce in the Dock.
                With this configuration option, the beeps occur only at
                the start and the end of a time box.
