@@ -17,8 +17,8 @@ with a POSIX compliant shell.
 
 [SHIELD_WIN]: https://img.shields.io/badge/download-timebox%2ecmd%20for%20Windows-brightgreen.svg
 [SHIELD_LIN]: https://img.shields.io/badge/download-timebox%20for%20Linux%2fOS%20X-brightgreen.svg
-[DOWNLOAD_WIN]: https://github.com/susam/timebox/releases/download/0.3.0/timebox.cmd
-[DOWNLOAD_LIN]: https://github.com/susam/timebox/releases/download/0.3.0/timebox
+[DOWNLOAD_WIN]: https://github.com/susam/timebox/releases/download/0.4.0/timebox.cmd
+[DOWNLOAD_LIN]: https://github.com/susam/timebox/releases/download/0.4.0/timebox
 
 [BUILD_IMG]: https://travis-ci.org/susam/timebox.svg?branch=master
 [BUILD_URL]: https://travis-ci.org/susam/timebox

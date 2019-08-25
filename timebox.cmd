@@ -4,7 +4,7 @@ rem Timebox
 
 rem The MIT License (MIT)
 rem
-rem Copyright (c) 2013-2017 Susam Pal
+rem Copyright (c) 2013-2019 Susam Pal
 rem
 rem Permission is hereby granted, free of charge, to any person obtaining
 rem a copy of this software and associated documentation files (the
@@ -31,9 +31,9 @@ rem Starting point of this script.
     setlocal
 
     rem Script data.
-    set VERSION=0.3.0
+    set VERSION=0.4.0
     set AUTHOR=Susam Pal
-    set COPYRIGHT=Copyright (c) 2013-2017 %AUTHOR%
+    set COPYRIGHT=Copyright (c) 2013-2019 %AUTHOR%
     set LICENSE_URL=http://susam.in/licenses/mit/
     set SUPPORT_URL=https://github.com/susam/timebox/issues
     set NAME=%~n0
