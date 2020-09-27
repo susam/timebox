@@ -114,6 +114,23 @@ is a multiple of 5. On Windows, the time remaining is also displayed in
 the title bar of the Command Prompt window; the title bar is updated
 every minute.
 
+Here is how a typical session looks on the terminal:
+
+    $ timebox
+    15:38:24 - 30
+    15:43:24 - 25
+    15:48:24 - 20
+    15:53:24 - 15
+    15:58:24 - 10
+    16:03:24 - 05
+    16:08:24 - 00
+    :-) :-) :-) :-) :-)
+    $
+
+Apart from writing to standard output as shown above, the script also
+beeps a few times. The beeping behaviour is explained in the next
+section.
+
 
 Beeps
 -----
