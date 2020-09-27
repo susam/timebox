@@ -1,24 +1,25 @@
 Timebox
 =======
+
 Timebox is a timer script that may be used to practice timeboxing.
 
 [![Download][SHIELD_WIN]][DOWNLOAD_WIN]
-[![Download][SHIELD_LIN]][DOWNLOAD_LIN]
+[![Download][SHIELD_UNX]][DOWNLOAD_UNX]
 [![Build Status][BUILD_IMG]][BUILD_URL]
 [![Coverage Status][COVERAGE_IMG]][COVERAGE_URL]
 
 The Windows script has been tested on Windows 7 only. However, it should
 work fine on other recent versions of Windows too.
 
-The Linux/macOS script has been tested with [bash][], [ksh][] and
-[zsh][] on Debian and macOS as well as with [dash][], [posh][] and
-[yash][] on Debian. It should work fine on any POSIX compliant system
-with a POSIX compliant shell.
+The Unix script has been tested with [bash][], [ksh][] and [zsh][] on
+Debian and macOS as well as with [dash][], [posh][] and [yash][] on
+Debian. It should work fine on any Linux distribution as well as any
+POSIX compliant system with a POSIX compliant shell.
 
-[SHIELD_WIN]: https://img.shields.io/badge/download-timebox%2ecmd%20for%20Windows-brightgreen.svg
-[SHIELD_LIN]: https://img.shields.io/badge/download-timebox%20for%20Linux%2fOS%20X-brightgreen.svg
+[SHIELD_WIN]: https://img.shields.io/badge/download-timebox%20for%20Windows-brightgreen.svg
+[SHIELD_UNX]: https://img.shields.io/badge/download-timebox%20for%20Unix-brightgreen.svg
 [DOWNLOAD_WIN]: https://github.com/susam/timebox/releases/download/0.4.0/timebox.cmd
-[DOWNLOAD_LIN]: https://github.com/susam/timebox/releases/download/0.4.0/timebox
+[DOWNLOAD_UNX]: https://github.com/susam/timebox/releases/download/0.4.0/timebox
 
 [BUILD_IMG]: https://travis-ci.org/susam/timebox.svg?branch=master
 [BUILD_URL]: https://travis-ci.org/susam/timebox
@@ -35,14 +36,20 @@ with a POSIX compliant shell.
 
 Contents
 --------
+
 * [Introduction](#introduction)
-* [Getting Started](#getting-started)
+* [Features](#features)
+* [Get Started](#get-started)
+* [Beeps](#beeps)
+* [Logs](#logs)
+* [Configuration](#configuration)
 * [License](#license)
 * [Support](#support)
 
 
 Introduction
 ------------
+
 Timeboxing is a time management technique that is believed to boost
 productivity by limiting the time during which a task is supposed to be
 completed. A time box is a fixed period of time alloted for a task or
@@ -55,18 +62,31 @@ decided time interval. Once the timer notifies that the time interval
 has expired, any activity or work on the task is stopped, and a short
 break is taken before beginning another time box.
 
-This project offers scripts for Windows as well as Linux/macOS that may
-be used to run a time box for a specified duration.
+This project offers scripts for Windows as well as Unix that may be used
+to run a time box for a specified duration.
 
 
-Getting Started
----------------
+Features
+--------
+
+- Runs in Windows Command Prompt or Linux/Unix/macOS shell.
+- Boring user experience.
+- No frills.
+- No ~~bells and~~ whistles. Actually, there are bells (`printf "\a"`).
+  See [Beeps](#beeps) for details.
+- Logs completed time boxes to a file in home directory. See
+  [Logs](#logs) for details.
+
+
+Get Started
+-----------
+
 Timebox is a single-file executable script.
 
 Download [`timebox.cmd`][DOWNLOAD_WIN] for Windows,
-or [`timebox`][DOWNLOAD_LIN] for Linux or macOS.
+or [`timebox`][DOWNLOAD_UNX] for Linux, Unix, or macOS.
 
-Copy it to a directory specified in the PATH environment variable. On
+Copy it to a directory specified in the `PATH` environment variable. On
 Linux or macOS, make the script executable: `chmod u+x timebox`.
 
 To run a 30 minute time box, run the script without any arguments.
@@ -94,38 +114,49 @@ is a multiple of 5. On Windows, the time remaining is also displayed in
 the title bar of the Command Prompt window; the title bar is updated
 every minute.
 
+
+Beeps
+-----
+
 Two beeps are played at the beginning of a time box. If the duration of
 the time box is longer then 15 minutes, one beep is played when 15
 minutes are remaining in the time box. If the duration of the time box
 is longer than 5 minutes, two beeps are played when 5 minutes are
 remaining in the time box. Four beeps are played at the end of a time
 box. A dialog box with smileys is displayed for ten seconds at the end
-of a time box. The time at which a time box ends and its duration is
-written to %userprofile%\timebox.log on Windows and ~/timebox.log on
-Linux/macOS at the end of a time box.
+of a time box.
+
+
+Logs
+----
+
+The time at which a time box ends and its duration is written to
+`%userprofile%\timebox.log` on Windows and `~/timebox.log` on
+Linux/Unix/macOS at the end of a time box.
 
 
 Configuration
 -------------
+
 The behaviour of the script can be tweaked a little bit with a
-configuration file at `~/.timeboxrc`, i.e. `%userprofile%\.timeboxrc`
+configuration file at `~/.timeboxrc`, i.e., `%userprofile%\.timeboxrc`
 on Windows and `$HOME/.timeboxrc` on Linux or macOS.
 
 The script recognizes the following keywords (configuration options) in
 the configuration file.
 
-  1. `quiet` - Do not beep in the middle of a time box. Without this
-               option, the script beeps once when 15 minutes are left
-               and twice more when 5 minutes are left. This can be
-               distracting on macOS where the beeps cause the icon for
-               the terminal running the script to bounce in the Dock.
-               With this configuration option, the beeps occur only at
-               the start and the end of a time box.
-  2. `sober` - Display the message "EOT" instead of smileys when a time
-               box ends.
+  - `quiet` - Do not beep in the middle of a time box. Without this
+    option, the script beeps once when 15 minutes are left and twice
+    more when 5 minutes are left. This can be distracting on macOS where
+    the beeps cause the icon for the terminal running the script to
+    bounce in the Dock. With this configuration option, the beeps occur
+    only at the start and the end of a time box.
+
+  - `sober` - Display the message "EOT" instead of smileys when a time
+    box ends.
 
 A configuration keyword may occur anywhere in the configuration file.
-The only requirement is that the keyword must appear as a word, i.e. it
+The only requirement is that the keyword must appear as a word, i.e., it
 must either occur at the beginning of a line or follow a whitespace
 character and it must also either occur at the end of a line or followed
 by a whitespace character. Therefore, multiple configuration keywords
@@ -135,6 +166,7 @@ configuration file that is not a configuration keyword is ignored.
 
 License
 -------
+
 This is free and open source software. You can use, copy, modify,
 merge, publish, distribute, sublicense, and/or sell copies of it,
 under the terms of the MIT License. See [LICENSE.md][L] for details.
@@ -147,5 +179,6 @@ express or implied. See [LICENSE.md][L] for details.
 
 Support
 -------
+
 To report bugs, suggest improvements, or ask questions, please create a
 new issue at <http://github.com/susam/timebox/issues>.
