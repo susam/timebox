@@ -87,7 +87,7 @@ Download [`timebox.cmd`][DOWNLOAD_WIN] for Windows,
 or [`timebox`][DOWNLOAD_UNX] for Linux, Unix, or macOS.
 
 Copy it to a directory specified in the `PATH` environment variable. On
-Linux or macOS, make the script executable: `chmod u+x timebox`.
+Linux/Unix/macOS, make the script executable: `chmod u+x timebox`.
 
 To run a 30 minute time box, run the script without any arguments.
 
@@ -140,7 +140,7 @@ Configuration
 
 The behaviour of the script can be tweaked a little bit with a
 configuration file at `~/.timeboxrc`, i.e., `%userprofile%\.timeboxrc`
-on Windows and `$HOME/.timeboxrc` on Linux or macOS.
+on Windows and `$HOME/.timeboxrc` on Linux/Unix/macOS.
 
 The script recognizes the following keywords (configuration options) in
 the configuration file.
