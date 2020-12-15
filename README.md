@@ -18,8 +18,8 @@ POSIX compliant system with a POSIX compliant shell.
 
 [SHIELD_WIN]: https://img.shields.io/badge/download-timebox%20for%20Windows-brightgreen.svg
 [SHIELD_UNX]: https://img.shields.io/badge/download-timebox%20for%20Unix-brightgreen.svg
-[DOWNLOAD_WIN]: https://github.com/susam/timebox/releases/download/0.4.0/timebox.cmd
-[DOWNLOAD_UNX]: https://github.com/susam/timebox/releases/download/0.4.0/timebox
+[DOWNLOAD_WIN]: https://github.com/susam/timebox/releases/download/0.5.0/timebox.cmd
+[DOWNLOAD_UNX]: https://github.com/susam/timebox/releases/download/0.5.0/timebox
 
 [BUILD_IMG]: https://travis-ci.org/susam/timebox.svg?branch=master
 [BUILD_URL]: https://travis-ci.org/susam/timebox
@@ -74,8 +74,8 @@ Features
 - No frills.
 - No ~~bells and~~ whistles. Actually, there are bells (`printf "\a"`).
   See [Beeps](#beeps) for details.
-- Logs completed time boxes to a file in home directory. See
-  [Logs](#logs) for details.
+- Logs completed time boxes to a file named `timebox.log` in the user's
+  home directory.
 
 
 Get Started
@@ -89,19 +89,28 @@ or [`timebox`][DOWNLOAD_UNX] for Linux, Unix, or macOS.
 Copy it to a directory specified in the `PATH` environment variable. On
 Linux/Unix/macOS, make the script executable: `chmod u+x timebox`.
 
-To run a 30 minute time box, run the script without any arguments.
+To run a 30 minute time box, run the script without any arguments:
 
     timebox
 
-The script accepts one integer argument that specifies the duration of
+The script accepts an integer argument that specifies the duration of
 the time box in minutes. For example, the following command also runs a
-30 minute time box.
+30 minute time box:
 
     timebox 30
 
-The following command runs a 15 minute time box.
+The following command runs a 15 minute time box:
 
     timebox 15
+
+The time at which a time box ends and its duration is written to
+`%userprofile%\timebox.log` on Windows and `~/timebox.log` on
+Linux/Unix/macOS at the end of a time box.
+
+The following command runs a 30 minute box with a text comment that is
+recorded in the log file when the time box ends.
+
+    timebox 30 write essay
 
 To learn more about the usage of the script, run the following command.
 
@@ -142,14 +151,6 @@ is longer than 5 minutes, two beeps are played when 5 minutes are
 remaining in the time box. Four beeps are played at the end of a time
 box. A dialog box with smileys is displayed for ten seconds at the end
 of a time box.
-
-
-Logs
-----
-
-The time at which a time box ends and its duration is written to
-`%userprofile%\timebox.log` on Windows and `~/timebox.log` on
-Linux/Unix/macOS at the end of a time box.
 
 
 Configuration

@@ -4,7 +4,7 @@ rem Timebox
 
 rem The MIT License (MIT)
 rem
-rem Copyright (c) 2013-2019 Susam Pal
+rem Copyright (c) 2013-2020 Susam Pal
 rem
 rem Permission is hereby granted, free of charge, to any person obtaining
 rem a copy of this software and associated documentation files (the
@@ -31,10 +31,10 @@ rem Starting point of this script.
     setlocal
 
     rem Script data.
-    set VERSION=0.4.0
+    set VERSION=0.5.0
     set AUTHOR=Susam Pal
-    set COPYRIGHT=Copyright (c) 2013-2019 %AUTHOR%
-    set LICENSE_URL=http://susam.in/licenses/mit/
+    set COPYRIGHT=Copyright (c) 2013-2020 %AUTHOR%
+    set LICENSE_URL=https://susam.github.io/licenses/mit.html
     set SUPPORT_URL=https://github.com/susam/timebox/issues
     set NAME=%~n0
 
@@ -45,9 +45,11 @@ rem Starting point of this script.
 
     rem Parse arguments and start timer.
     set minute=60
+    set duration_arg=
+    set comment_arg=
     call :parse_arguments %*
     call :parse_configuration
-    call :timer %duration_arg%
+    call :timer %duration_arg% "%comment_arg%"
 
     endlocal
     goto :eof
@@ -96,16 +98,26 @@ rem   arg...: All arguments this script was invoked with.
         call :err Unknown option "%arg%".
         goto :eof
     )
-
-    if not "%~2" == "" (
-        call :err Surplus argument "%~2".
-        goto :eof
-    ) else if not "%arg%" == "" (
-        set duration_arg=%arg%
-    ) else (
+    if not "%arg%" == "" (
+        if "%duration_arg%" == "" (
+            set duration_arg=%arg%
+            shift
+            goto :parse_arguments
+        )
+    )
+:consume_comment
+    if not "%~1" == "" (
+        if "%comment_arg%" == "" (
+            set comment_arg=%~1
+        ) else (
+            set comment_arg=%comment_arg% %~1
+        )
+        shift
+        goto :consume_comment
+    )
+    if "%duration_arg%" == "" (
         set duration_arg=%DEFAULT_DURATION%
     )
-
     set arg=
     goto :eof
 
@@ -147,6 +159,7 @@ rem   duration: Number of minutes.
         call :err Bad duration: "%~1".
         goto :eof
     )
+    set comment=%~2
     for /l %%i in (%duration%, -1, 0) do call :minute %%i
     endlocal
     goto :eof
@@ -201,8 +214,13 @@ rem   time_left: Time remaining in the time box.
         set console_msg=EOT
         set desktop_msg=EOT
     ) else (
-        set console_msg=    
+        set console_msg=:-^^^) :-^^^) :-^^^) :-^^^) :-^^^)
         set desktop_msg=":-)    :-)    :-)    :-)    :-)"
+    )
+
+    set log_msg=%date% %time:~0,-3% - %duration%
+    if not "%comment%" == "" (
+        set log_msg=%log_msg% - %comment%
     )
 
     if not %time_left% == 0 (
@@ -212,7 +230,7 @@ rem   time_left: Time remaining in the time box.
         rem Display smileys and write log at the end of the time box.
         echo %console_msg%
         msg %username% /w /time:10 %desktop_msg%
-        >> "%LOG_FILE%" echo %date% %time:~0,-3% - %duration%
+        >> "%LOG_FILE%" echo %log_msg%
     )
 
     endlocal
@@ -359,7 +377,7 @@ rem Pause if this script was invoked from command prompt.
 rem Show help.
 :show_help
     setlocal
-    echo Usage: %NAME% [-w] [-h] [-v] [DURATION]
+    echo Usage: %NAME% [-w] [-h] [-v] [DURATION [MESSAGE ...]]
     echo.
     echo The timeboxing script runs for the number of minutes specified
     echo as the duration argument. If no duration argument is specified,
@@ -371,8 +389,9 @@ rem Show help.
     echo   -v, --version   Display version information and exit.
     echo.
     echo Examples:
-    echo   %NAME%         Run a %DEFAULT_DURATION% minute time box.
-    echo   %NAME% 15      Run a 15 minute time box.
+    echo   %NAME%                 Run a %DEFAULT_DURATION% minute time box.
+    echo   %NAME% 15              Run a 15 minute time box.
+    echo   %NAME% 30 write essay  Specify a comment to be recorded in log.
     echo.
     echo Report bugs to ^<%SUPPORT_URL%^>.
     call :pause

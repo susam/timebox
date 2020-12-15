@@ -3,6 +3,7 @@ Timebox Developer Notes
 
 Tests
 -----
+
 All discussion about tests in this section assume that the tests are
 being run on a Debian or Debian based system. On other systems, the
 commands in Makefile may need to be modified appropriately. The Linux/OS
@@ -13,7 +14,9 @@ script.
 The Windows timebox.cmd script is not discussed in this document at all.
 There are no tests for it.
 
+
 ### Setup Test Environment ###
+
 Change the current directory to the top level directory of this project
 and enter the following command as root to install kcov. It is used to
 measure code coverage of the tests.
@@ -25,7 +28,9 @@ cross-shell compatibility.
 
 	make install_shells
 
+
 ### Run Tests ###
+
 Change current directory to the top level directory of this project and
 enter the following command to run a quick test with sh.
 
@@ -43,7 +48,9 @@ Finally enter the following command to measure code coverage.
 Open coverage/index.html with a web browser to see the code coverage
 results.
 
+
 ### About the Tests ###
+
 All tests for this project are present in the *test* directory relative
 to the top level directory of this project.
 
@@ -104,6 +111,7 @@ See the test runner *test/test* for more details.
 
 Release
 -------
+
 The following tasks need to be performed for every release of a new
 version. These tasks should be performed with the project's top-level
 directory as the current directory.
@@ -130,7 +138,8 @@ directory as the current directory.
 
         git status
         git diff
-        git commit -a
+        git add -p
+        git commit
 
   - Tag the release.
 

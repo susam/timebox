@@ -4,7 +4,7 @@
 
 # The MIT License (MIT)
 #
-# Copyright (c) 2013-2019 Susam Pal
+# Copyright (c) 2013-2020 Susam Pal
 #
 # Permission is hereby granted, free of charge, to any person obtaining
 # a copy of this software and associated documentation files (the
@@ -26,10 +26,10 @@
 # SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 
-VERSION=0.4.0
+VERSION=0.5.0
 AUTHOR="Susam Pal"
-COPYRIGHT="Copyright (c) 2013-2019 $AUTHOR"
-LICENSE_URL="http://susam.in/licenses/mit/"
+COPYRIGHT="Copyright (c) 2013-2020 $AUTHOR"
+LICENSE_URL="https://susam.github.io/licenses/mit.html"
 SUPPORT_URL="https://github.com/susam/timebox/issues"
 NAME=${0##*/}
 
@@ -46,7 +46,7 @@ main()
 {
     parse_arguments "$@"
     parse_configuration
-    timer "$duration_arg"
+    timer "$duration_arg" "$comment_arg"
 }
 
 
@@ -65,7 +65,7 @@ parse_arguments()
         case $1 in
             -m)
                 [ $# -lt 2 ] &&
-                quit \""$1"\" must be followed by an integer.
+                    quit \""$1"\" must be followed by an integer.
                 minute=$2
                 shift 2
                 ;;
@@ -90,15 +90,20 @@ parse_arguments()
         esac
     done
 
-    if [ $# -ge 2 ]
-    then
-        quit Surplus argument \""$2"\".
-    elif [ $# -eq 1 ]
-    then
-        duration_arg="$1"
-    else
-        duration_arg=$DEFAULT_DURATION
-    fi
+    while [ $# -gt 0 ]
+    do
+        if [ -z "$duration_arg" ]
+        then
+            duration_arg="$1"
+            shift
+        elif [ -z "$comment_arg" ]
+        then
+            comment_arg="$*"
+            break
+        fi
+    done
+
+    [ -z "$duration_arg" ] && duration_arg=$DEFAULT_DURATION
 }
 
 
@@ -132,6 +137,7 @@ parse_configuration()
 timer()
 {
     duration=$1
+    comment=$2
 
     if ! printf "%s" "$duration" | grep -q "^[1-9][0-9]*$" ||
        [ $duration -ge 1000000000 ]
@@ -147,6 +153,7 @@ timer()
     done
 
     unset duration
+    unset comment
     unset i
 }
 
@@ -207,11 +214,14 @@ minute()
         # Display smileys and write log at the end of the time box.
         echo "$console_msg"
         msg "$desktop_msg"
-        echo "$(date "+%Y-%m-%d %H:%M:%S") - $duration" >> "$LOG_FILE"
+        log_msg="$(date "+%Y-%m-%d %H:%M:%S") - $duration"
+        [ -n "$comment" ] && log_msg="$log_msg - $comment"
+        echo "$log_msg" >> "$LOG_FILE"
     fi
 
     unset console_msg
     unset desktop_msg
+    unset log_msg
 }
 
 
@@ -320,7 +330,7 @@ quit()
 show_help()
 {
     cat <<eof
-Usage: $NAME [-w] [-h] [-v] [DURATION]
+Usage: $NAME [-w] [-h] [-v] [DURATION [MESSAGE ...]]
 
 The timeboxing script runs for the number of minutes specified
 as the duration argument. If no duration argument is specified,
@@ -331,8 +341,9 @@ Options:
   -v, --version   Display version information and exit.
 
 Examples:
-  $NAME         Run a $DEFAULT_DURATION minute time box.
-  $NAME 15      Run a 15 minute time box.
+  $NAME                 Run a $DEFAULT_DURATION minute time box.
+  $NAME 15              Run a 15 minute time box.
+  $NAME 30 write essay  Specify a comment to be recorded in log.
 
 Report bugs to <$SUPPORT_URL>.
 eof

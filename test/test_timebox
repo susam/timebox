@@ -4,7 +4,7 @@
 
 # The MIT License (MIT)
 #
-# Copyright (c) 2013-2016 Susam Pal
+# Copyright (c) 2013-2020 Susam Pal
 #
 # Permission is hereby granted, free of charge, to any person obtaining
 # a copy of this software and associated documentation files (the
@@ -54,7 +54,7 @@ hide_bell()
 
 
 # Test helper function that replaces time field with "TIME".
-norm_time()
+mask_time()
 {
     sed 's/[0-2][0-9]:[0-5][0-9]:[0-5][0-9]/TIME/'
 }
@@ -90,9 +90,11 @@ test_unknown_option()
 
 
 # Surplus argument leads to error.
-test_surplus_argument()
+test_comment_argument()
 {
-    main 10 20 2>&1 | grep -q '^.*: Surplus argument "20"\.$'
+    unset MSG_COMMANDS
+    main -m 0 10 "foo  bar" "baz  qux" > /dev/null
+    grep -q "^....-..-.. ..:..:.. - 10 - foo  bar baz  qux$" "$LOG_FILE"
 }
 
 
@@ -115,7 +117,7 @@ test_default_duration()
 {
     unset MSG_COMMANDS
 
-    main -m 0 | norm_time | hide_bell > "$TWORK/timebox.out"
+    main -m 0 | mask_time | hide_bell > "$TWORK/timebox.out"
     diff -u "$TWORK/timebox.out" "$TDATA/timebox30.out"
 }
 
@@ -124,7 +126,7 @@ test_default_duration()
 test_good_duration()
 {
     unset MSG_COMMANDS
-    main -m 0 15 | norm_time | hide_bell > "$TWORK/timebox.out"
+    main -m 0 15 | mask_time | hide_bell > "$TWORK/timebox.out"
     diff -u "$TWORK/timebox.out" "$TDATA/timebox15.out"
 }
 
@@ -174,7 +176,7 @@ echo msg4: "\$msg"
 eof
 )"
 
-    main -m 0 | norm_time | hide_bell > "$TWORK/timebox.out"
+    main -m 0 | mask_time | hide_bell > "$TWORK/timebox.out"
     diff -u "$TWORK/timebox.out" "$TDATA/timebox-msg.out"
 }
 
@@ -192,7 +194,7 @@ test_end_log()
 test_duration_default()
 {
     unset MSG_COMMANDS
-    main -m 0 | norm_time | show_bell > "$TWORK/timebox.out"
+    main -m 0 | mask_time | show_bell > "$TWORK/timebox.out"
     diff -u "$TWORK/timebox.out" "$TDATA/timebox-duration-default.out"
 }
 
@@ -201,7 +203,7 @@ test_duration_default()
 test_duration_16()
 {
     unset MSG_COMMANDS
-    main -m 0 16 | norm_time | show_bell > "$TWORK/timebox.out"
+    main -m 0 16 | mask_time | show_bell > "$TWORK/timebox.out"
     diff -u "$TWORK/timebox.out" "$TDATA/timebox-duration-16.out"
 }
 
@@ -210,7 +212,7 @@ test_duration_16()
 test_duration_15()
 {
     unset MSG_COMMANDS
-    main -m 0 15 | norm_time | show_bell > "$TWORK/timebox.out"
+    main -m 0 15 | mask_time | show_bell > "$TWORK/timebox.out"
     diff -u "$TWORK/timebox.out" "$TDATA/timebox-duration-15.out"
 }
 
@@ -219,7 +221,7 @@ test_duration_15()
 test_duration_6()
 {
     unset MSG_COMMANDS
-    main -m 0 6 | norm_time | show_bell > "$TWORK/timebox.out"
+    main -m 0 6 | mask_time | show_bell > "$TWORK/timebox.out"
     diff -u "$TWORK/timebox.out" "$TDATA/timebox-duration-6.out"
 }
 
@@ -228,7 +230,7 @@ test_duration_6()
 test_duration_5()
 {
     unset MSG_COMMANDS
-    main -m 0 5 | norm_time | show_bell > "$TWORK/timebox.out"
+    main -m 0 5 | mask_time | show_bell > "$TWORK/timebox.out"
     diff -u "$TWORK/timebox.out" "$TDATA/timebox-duration-5.out"
 }
 
@@ -237,7 +239,7 @@ test_duration_5()
 test_duration_1()
 {
     unset MSG_COMMANDS
-    main -m 0 1 | norm_time | show_bell > "$TWORK/timebox.out"
+    main -m 0 1 | mask_time | show_bell > "$TWORK/timebox.out"
     diff -u "$TWORK/timebox.out" "$TDATA/timebox-duration-1.out"
 }
 
@@ -246,7 +248,7 @@ test_conf_quiet()
 {
     unset MSG_COMMANDS
     echo quiet > "$TWORK/.timeboxrc"
-    main -m 0 | norm_time | show_bell > "$TWORK/timebox.out"
+    main -m 0 | mask_time | show_bell > "$TWORK/timebox.out"
     diff -u "$TWORK/timebox.out" "$TDATA/timebox-conf-quiet.out"
 }
 
@@ -255,7 +257,7 @@ test_conf_sober()
 {
     MSG_COMMANDS='echo msg: "$msg"'
     echo sober > $TWORK/.timeboxrc
-    main -m 0 | norm_time | show_bell > "$TWORK/timebox.out"
+    main -m 0 | mask_time | show_bell > "$TWORK/timebox.out"
     diff -u "$TWORK/timebox.out" "$TDATA/timebox-conf-sober.out"
 }
 
@@ -264,7 +266,7 @@ test_conf_qtpi()
 {
     MSG_COMMANDS='echo msg: "$msg"'
     echo qtpi > $TWORK/.timeboxrc
-    main -m 0 | norm_time | show_bell > "$TWORK/timebox.out"
+    main -m 0 | mask_time | show_bell > "$TWORK/timebox.out"
     diff -u "$TWORK/timebox.out" "$TDATA/timebox-conf-qtpi.out"
 }
 
@@ -274,11 +276,11 @@ test_conf_multi()
     MSG_COMMANDS='echo msg: "$msg"'
 
     echo quiet sober > $TWORK/.timeboxrc
-    main -m 0 | norm_time | show_bell > "$TWORK/timebox.out"
+    main -m 0 | mask_time | show_bell > "$TWORK/timebox.out"
     diff -u "$TWORK/timebox.out" "$TDATA/timebox-conf-multi.out" || return 1
 
     echo quiet > $TWORK/.timeboxrc
     echo sober >> $TWORK/.timeboxrc
-    main -m 0 | norm_time | show_bell > "$TWORK/timebox.out"
+    main -m 0 | mask_time | show_bell > "$TWORK/timebox.out"
     diff -u "$TWORK/timebox.out" "$TDATA/timebox-conf-multi.out" || return 1
 }

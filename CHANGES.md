@@ -1,8 +1,17 @@
 Changelog
 =========
 
+0.5.0 (2020-12-15)
+------------------
+
+### Added
+
+- Add optional comment argument to record a comment for the time box in
+  the log file.
+
+
 0.4.0 (2019-08-25)
------------------
+------------------
 
 ### Fixed
 
